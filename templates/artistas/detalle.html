@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ artista.nombre }} - {% trans "Rescate Digital" %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-5">
+        <li class="breadcrumb-item"><a href="{% url 'inicio' %}" class="text-decoration-none text-muted">{% trans "Inicio" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'artistas_lista' %}" class="text-decoration-none fw-bold" style="color: var(--primary-color);">{% trans "Artistas" %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ artista.nombre }}</li>
+      </ol>
+    </nav>
+
+    <div class="row gx-5 mb-5">
+        <!-- Imagen del artista -->
+        <div class="col-lg-5 mb-4">
+            <div class="position-relative" style="padding: 15px; background-color: #f0f0f0; border-radius: 12px;">
+                {% if artista.imagen_perfil %}
+                    <img src="{{ artista.imagen_perfil.url }}" class="img-fluid rounded shadow-sm w-100" alt="{{ artista.nombre }}" style="object-fit: contain; filter: sepia(30%);">
+                {% else %}
+                    <div class="d-flex align-items-center justify-content-center rounded shadow-sm" style="height: 500px; background-color: #8c6e53; color: white;">
+                        <i class="fas fa-user-tie fa-10x opacity-50"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Detalles del artista -->
+        <div class="col-lg-7">
+            <span class="badge mb-3" style="background-color: var(--accent-color); color: white; padding: 6px 12px; font-size: 0.75rem; letter-spacing: 1px;">COMPOSITOR DESTACADO</span>
+            <h1 class="display-4 fw-bold mb-3" style="color: var(--primary-color); letter-spacing: -1px;">{{ artista.nombre }}</h1>
+            
+            <div class="d-flex align-items-center mb-4 text-dark fw-bold" style="font-size: 1.1rem;">
+                <i class="far fa-calendar-alt text-success me-2"></i> {% if artista.fecha_nacimiento %}{{ artista.fecha_nacimiento|date:"Y" }}{% else %}?{% endif %} &nbsp;&bull;&nbsp; 
+                <i class="fas fa-map-marker-alt text-success ms-3 me-2"></i> Loja, Ecuador
+            </div>
+            
+            <h4 class="fw-bold mb-3" style="color: var(--secondary-color); border-left: 4px solid var(--accent-color); padding-left: 12px;">{% trans "Biografía" %}</h4>
+            <div class="lead text-muted" style="font-size: 1.1rem; line-height: 1.8;">
+                {{ artista.biografia|linebreaks }}
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-sm-6 mb-3">
+                    <div class="d-flex flex-column p-4 bg-white shadow-sm rounded">
+                        <h2 class="text-gold fw-bold mb-0">{{ artista.obras.count }}+</h2>
+                        <span class="text-uppercase fw-bold text-muted small letter-spacing-1">Composiciones</span>
+                    </div>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <div class="d-flex flex-column p-4 bg-white shadow-sm rounded">
+                        <h2 class="text-gold fw-bold mb-0">Loja</h2>
+                        <span class="text-uppercase fw-bold text-muted small letter-spacing-1">Cuna Musical</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secciones secundarias: Obras e Hitos -->
+    <div class="row gx-5 mt-5">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold" style="color: var(--primary-color); border-left: 4px solid var(--accent-color); padding-left: 12px;">{% trans "Obras Destacadas" %}</h3>
+                <a href="#" class="text-decoration-none fw-bold text-dark small">Ver todas +</a>
+            </div>
+            
+            {% if artista.obras.all %}
+                <div class="list-group list-group-flush">
+                    {% for obra in artista.obras.all %}
+                    <div class="list-group-item bg-transparent d-flex align-items-center py-3 border-bottom px-0">
+                        <div class="rounded-circle d-flex justify-content-center align-items-center bg-light text-success me-3" style="width: 45px; height: 45px;">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-0 fw-bold text-dark">{{ obra.titulo }}</h5>
+                            {% if obra.descripcion %}<p class="mb-0 small text-muted">{{ obra.descripcion }}</p>{% endif %}
+                        </div>
+                        <div class="ms-auto text-success">
+                            <i class="fas fa-play-circle fa-2x"></i>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="p-4 bg-light rounded text-center text-muted">
+                    <p class="mb-0">{% trans "Aún no hay obras registradas para este artista." %}</p>
+                </div>
+            {% endif %}
+
+            <!-- Legado Cultural / Info Box -->
+            <div class="mt-5 p-4 rounded text-white" style="background-color: var(--primary-color);">
+                <div class="d-flex align-items-center mb-3 text-gold">
+                    <i class="fas fa-star me-2"></i>
+                    <h5 class="fw-bold mb-0">Legado Cultural</h5>
+                </div>
+                <p class="mb-0" style="opacity: 0.9;">
+                    Su influencia persiste en la educación musical ecuatoriana. El Conservatorio de Música de Loja lleva su legado, honrando su dedicación a la formación de nuevas generaciones y uniendo a la nación a través de la melodía.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mt-5 mt-lg-0">
+            <!-- Sidebar GAMIFICATION CTA -->
+            <div class="card border-0 shadow-sm mb-5" style="background-color: #fef8eb;">
+                <div class="card-body p-4 text-center">
+                    <div class="rounded-circle bg-gold text-white d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 50px; height: 50px; background-color: var(--accent-color);">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-3">¿Cuánto sabes de {{ artista.nombre|truncatewords:2 }}?</h5>
+                    <p class="small text-muted mb-4">Pon a prueba tus conocimientos sobre la vida y obra del maestro lojano en este breve desafío interactivo.</p>
+                    <a href="{% url 'juegos_lista' %}" class="btn btn-dark-green w-100">Empezar Quiz &nbsp;<i class="fas fa-paper-plane"></i></a>
+                </div>
+            </div>
+            
+            <!-- Hitos Linea del tiempo sidebar mode -->
+            <h4 class="fw-bold mb-4" style="color: var(--primary-color);">{% trans "Cronología" %}</h4>
+            {% if artista.hitos.all %}
+                <div class="position-relative ms-2">
+                    <div class="position-absolute h-100 border-start border-2" style="left: 7px; border-color: #e5e7eb !important;"></div>
+                    {% for hito in artista.hitos.all %}
+                    <div class="position-relative ps-4 mb-4">
+                        <div class="position-absolute bg-white border border-2 rounded-circle" style="width: 16px; height: 16px; left: 0; top: 4px; border-color: var(--accent-color) !important;"></div>
+                        <h6 class="fw-bold text-dark mb-1">{{ hito.anio }}</h6>
+                        <p class="small text-muted mb-0">{{ hito.evento }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted small">{% trans "Sin eventos cronológicos registrados." %}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

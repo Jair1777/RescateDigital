@@ -1,0 +1,116 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Rescate Digital Lojano{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg sticky-top px-3">
+        <div class="container-fluid mx-md-4">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
+                <i class="fas fa-music me-2 text-success"></i> 
+                RESCATE DIGITAL
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link px-3" href="{% url 'inicio' %}">{% trans "Inicio" %}</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="{% url 'historia' %}">{% trans "Historia musical" %}</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="{% url 'artistas_lista' %}">{% trans "Artistas" %}</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="{% url 'juegos_lista' %}">{% trans "Juegos" %}</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#">{% trans "Sobre el proyecto" %}</a></li>
+                </ul>
+            </div>
+            
+            <div class="d-flex align-items-center gap-3 d-none d-lg-flex">
+                <!-- Lang Selector Pill (Visual mimic for now) -->
+                <div class="lang-selector-group border">
+                    <span class="lang-btn active">ES</span>
+                    <span class="lang-btn">EN</span>
+                    <span class="lang-btn">FR</span>
+                </div>
+                
+                <!-- Authentication status -->
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link text-dark mt-1" title="Cerrar Sessión">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
+                    <a href="{% url 'ranking' %}" class="btn btn-light rounded-circle shadow-sm border p-2 text-warning">
+                        <i class="fas fa-bell"></i>
+                    </a>
+                    <a href="#" class="btn btn-light rounded-circle shadow-sm border p-2" title="{{ user.username }}">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer mt-auto">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-md-5 mb-4">
+                    <h5 class="text-white fw-bold mb-3"><i class="fas fa-music text-warning"></i> RESCATE DIGITAL</h5>
+                    <p class="pe-md-5">Un proyecto destinado a la recuperación, digitalización y puesta en valor del patrimonio musical de la ciudad de Loja, Ecuador.</p>
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="#" class="text-muted"><i class="fas fa-share-alt"></i></a>
+                        <a href="#" class="text-muted"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="footer-title">Navegación</h5>
+                    <a href="{% url 'inicio' %}" class="footer-link">Inicio</a>
+                    <a href="{% url 'historia' %}" class="footer-link">Historia Musical</a>
+                    <a href="#" class="footer-link">Archivo Digital</a>
+                    <a href="{% url 'artistas_lista' %}" class="footer-link">Artistas</a>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-title">Institucional</h5>
+                    <a href="#" class="footer-link">Sobre el Proyecto</a>
+                    <a href="#" class="footer-link">Investigadores</a>
+                    <a href="#" class="footer-link">Alianzas</a>
+                    <a href="#" class="footer-link">Contacto</a>
+                </div>
+            </div>
+            
+            <div class="text-center pt-4 border-top border-secondary">
+                <p class="mb-0">© {% now "Y" %} Rescate Digital de la Historia Musical Lojana. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

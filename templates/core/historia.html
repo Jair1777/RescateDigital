@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans "Historia Musical de Loja - Rescate Digital" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="display-4 fw-bold mb-3 text-center" style="color: var(--primary-color);">{% trans "Historia Musical de la Ciudad de Loja" %}</h1>
+            <p class="lead text-center text-muted mb-5">{% trans "Conocida como la Capital Musical y Cultural del Ecuador." %}</p>
+            
+            <div class="card shadow-sm mb-5 border-0 bg-white" style="border-radius: 12px; overflow: hidden;">
+                <!-- Decorative top bar in gold -->
+                <div style="height: 6px; width: 100%; background-color: var(--accent-color);"></div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="mb-4 d-flex align-items-center" style="color: var(--primary-color);">
+                        <i class="fas fa-landmark me-3" style="color: var(--accent-color);"></i> {% trans "Orígenes" %}
+                    </h3>
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-dark);">
+                        {% trans "La ciudad de Loja ha sido durante siglos un epicentro de creación artística en Ecuador. Su tradición musical está profundamente arraigada en el mestizaje entre los ritmos andinos originarios y la influencia europea introducida durante la colonia. Instrumentos como la guitarra, el rondador, y posteriormente el piano, se volvieron fundamentales en el desarrollo del paisaje sonoro local." %}
+                    </p>
+                    
+                    <h3 class="mt-5 mb-4 d-flex align-items-center" style="color: var(--primary-color);">
+                        <i class="fas fa-crown me-3" style="color: var(--accent-color);"></i> {% trans "La Época de Oro" %}
+                    </h3>
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-dark);">
+                        {% trans "A finales del siglo XIX y a lo largo del siglo XX, surgieron grandes figuras que consolidaron a Loja como el semillero de compositores e intérpretes por excelencia. Ritmos tradicionales como el pasillo, el sanjuanito, y el yaraví lojano, fueron elevados por maestros que alcanzaron reconocimiento nacional e internacional, dejando un legado imborrable en la identidad ecuatoriana." %}
+                    </p>
+
+                    <h3 class="mt-5 mb-4 d-flex align-items-center" style="color: var(--primary-color);">
+                        <i class="fas fa-guitar me-3" style="color: var(--accent-color);"></i> {% trans "La Música Hoy" %}
+                    </h3>
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-dark);">
+                        {% trans "En la actualidad, instituciones como la Orquesta Sinfónica de Loja y el Conservatorio Salvador Bustamante Celi continúan formando a las nuevas generaciones, demostrando que la música en Loja no es solo historia, sino una pasión viva que evoluciona." %}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row text-center mt-5 pt-3 border-top">
+                <div class="col-md-4 mb-4">
+                    <div class="p-4 bg-light rounded shadow-sm h-100 border-0 transition">
+                        <i class="fas fa-users fa-3x mb-3" style="color: var(--primary-color);"></i>
+                        <h4 class="fw-bold" style="color: var(--primary-color);">{% trans "Compositores" %}</h4>
+                        <p class="text-muted small">{% trans "Descubre las mentes detrás de los acordes." %}</p>
+                        <a href="{% url 'artistas_lista' %}" class="btn btn-outline-green btn-sm rounded-pill mt-2" style="border-color: var(--primary-color); color: var(--primary-color);">{% trans "Ver Artistas" %}</a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="p-4 bg-light rounded shadow-sm h-100 border-0 transition">
+                        <i class="fas fa-university fa-3x mb-3" style="color: var(--primary-color);"></i>
+                        <h4 class="fw-bold" style="color: var(--primary-color);">{% trans "Instituciones" %}</h4>
+                        <p class="text-muted small">{% trans "Hogares de aprendizaje musical." %}</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="p-4 bg-light rounded shadow-sm h-100 border-0 transition">
+                        <i class="fas fa-music fa-3x mb-3" style="color: var(--primary-color);"></i>
+                        <h4 class="fw-bold" style="color: var(--primary-color);">{% trans "Obras" %}</h4>
+                        <p class="text-muted small">{% trans "Escucha las piezas inmortales." %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

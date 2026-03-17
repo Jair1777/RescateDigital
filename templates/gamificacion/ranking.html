@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans "Ranking de Usuarios - Rescate Digital" %}{% endblock %}
+
+{% block content %}
+<!-- Banner de Cabecera -->
+<div class="gamification-section py-5 text-center shadow-sm">
+    <div class="container">
+        <i class="fas fa-crown mb-3" style="color: var(--accent-color); font-size: 3.5rem;"></i>
+        <h1 class="display-5 fw-bold text-white">{% trans "Salón de la Fama" %}</h1>
+        <p class="lead text-white opacity-75 mx-auto" style="max-width: 650px;">
+            {% trans "Descubre a los mejores investigadores de nuestro patrimonio musical. ¿Podrás tú alcanzar la cima?" %}
+        </p>
+    </div>
+</div>
+
+<div class="container py-5 mt-n5 position-relative z-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-borderless mb-0 text-center align-middle">
+                            <thead style="background-color: #f1f5f9; color: var(--primary-color);">
+                                <tr>
+                                    <th scope="col" class="py-4 text-uppercase fw-bold" style="font-size: 0.85rem; letter-spacing: 1px;">{% trans "Rango" %}</th>
+                                    <th scope="col" class="py-4 text-uppercase fw-bold text-start ps-4" style="font-size: 0.85rem; letter-spacing: 1px;">{% trans "Investigador" %}</th>
+                                    <th scope="col" class="py-4 text-uppercase fw-bold" style="font-size: 0.85rem; letter-spacing: 1px;">{% trans "Puntuación" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in usuarios %}
+                                <tr class="border-bottom" style="{% if forloop.counter <= 3 %}background-color: #fef8eb;{% endif %}">
+                                    <td class="py-4">
+                                        {% if forloop.counter == 1 %}
+                                            <i class="fas fa-trophy fa-2x" style="color: #ffd700; filter: drop-shadow(0px 2px 2px rgba(255,215,0,0.5));"></i>
+                                        {% elif forloop.counter == 2 %}
+                                            <i class="fas fa-medal fa-2x" style="color: #c0c0c0;"></i>
+                                        {% elif forloop.counter == 3 %}
+                                            <i class="fas fa-medal fa-2x" style="color: #cd7f32;"></i>
+                                        {% else %}
+                                            <span class="fs-5 fw-bold text-muted">{{ forloop.counter }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-4 text-start ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background-color: var(--primary-color);">
+                                                <span class="fw-bold">{{ usuario.username|make_list|first|upper }}</span>
+                                            </div>
+                                            <span class="fs-6 fw-bold text-dark">{{ usuario.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4">
+                                        <div class="badge rounded-pill fw-bold text-dark px-3 py-2" style="background-color: rgba(227, 170, 89, 0.2); font-size: 1rem;">
+                                            {{ usuario.puntos_acumulados }} <span class="ms-1" style="font-size: 0.75rem; color: var(--accent-color);">PTS</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-muted py-5 text-center">
+                                        <i class="far fa-sad-tear fa-3x mb-3 text-secondary opacity-50"></i>
+                                        <h5>{% trans "El ranking está completamente vacío." %}</h5>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="{% url 'juegos_lista' %}" class="btn btn-outline-green rounded-pill px-5 fw-bold shadow-sm" style="color: var(--primary-color); border-color: var(--primary-color);">
+                    <i class="fas fa-arrow-left me-2"></i> {% trans "Volver a los juegos" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

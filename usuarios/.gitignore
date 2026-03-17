@@ -1,0 +1,36 @@
+# Python
+# Generic Python ignore file, based on github/gitignore/Python.gitignore
+# byte-code files
+*.pyc
+__pycache__/
+# distribution / packaging
+.Python
+build/
+dist/
+wheels/
+*.egg-info/
+# virtual environment
+venv/
+env/
+# Unit test / coverage
+.coverage
+.tox/
+.pytest_cache/
+
+# Django
+# SQLite database file
+db.sqlite3
+# Media and static files (often handled by a separate storage service in production)
+/media/
+/static/
+# Secret environment variables file
+.env
+# Django debug toolbar specific
+.djdt
+# Various IDE files
+.idea/  # For PyCharm/IntelliJ
+.vscode/ # For VS Code
+
+# Operating System Files
+.DS_Store # macOS
+Thumbs.db # Windows

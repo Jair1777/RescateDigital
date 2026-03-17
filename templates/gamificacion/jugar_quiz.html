@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ quiz.titulo }} - {% trans "Rescate Digital" %}{% endblock %}
+
+{% block content %}
+<div class="gamification-section py-4 shadow-sm mb-5 text-center">
+    <div class="container">
+        <h1 class="display-6 fw-bold text-white mb-2">{{ quiz.titulo }}</h1>
+        <p class="lead text-white opacity-75 mx-auto mb-0" style="max-width: 600px;">
+            {{ quiz.descripcion }}
+        </p>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                    <span class="badge text-dark rounded-pill" style="background-color: var(--accent-color); font-size: 0.85rem;"><i class="fas fa-question-circle me-1"></i> {{ quiz.preguntas.count }} {% trans "Preguntas" %}</span>
+                    <span class="text-muted small fw-bold"><i class="fas fa-medal text-warning"></i> {% trans "Posibles Puntos" %}: {{ quiz.puntos_totales }}</span>
+                </div>
+                
+                <div class="card-body p-4 p-md-5 bg-light">
+                    <form method="post" action="{% url 'jugar_quiz' quiz.id %}">
+                        {% csrf_token %}
+                        
+                        {% for pregunta in quiz.preguntas.all %}
+                        <div class="mb-5 bg-white p-4 rounded shadow-sm border-start border-4" style="border-color: var(--primary-color) !important;">
+                            <h4 class="fw-bold mb-4" style="color: var(--primary-color);">{{ formloop.counter }}. {{ pregunta.texto }}</h4>
+                            
+                            <div class="list-group list-group-flush gap-2">
+                                {% for opcion in pregunta.opciones.all %}
+                                <label class="list-group-item rounded border form-check-label px-3 py-3 d-flex align-items-center transition btn-outline-success" style="cursor: pointer; transition: all 0.2s ease;">
+                                    <input class="form-check-input me-3 ms-1 flex-shrink-0" type="radio" 
+                                           name="pregunta_{{ pregunta.id }}" 
+                                           value="{{ opcion.id }}" required
+                                           style="width: 1.25rem; height: 1.25rem;">
+                                    <span class="text-dark">{{ opcion.texto }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-gold btn-lg fw-bold shadow-sm py-3 text-uppercase" style="letter-spacing: 1px;">
+                                {% trans "Enviar Respuestas" %} <i class="fas fa-paper-plane ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-footer bg-white border-top p-4 text-center">
+                    <a href="{% url 'juegos_lista' %}" class="text-muted text-decoration-none fw-bold">
+                        <i class="fas fa-arrow-left me-2"></i> {% trans "Volver a la selección de juegos" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
