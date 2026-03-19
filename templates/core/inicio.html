@@ -20,48 +20,60 @@
     </div>
 </header>
 
-<!-- ARTISTAS DESTACADOS -->
+<!-- ACERCA DEL PROYECTO & CURIOSIDADES -->
 <section class="container py-5 my-5">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-        <div>
-            <h2 class="section-title">Artistas Destacados</h2>
-            <p class="text-muted">Descubre a los maestros que dieron forma a la identidad musical de nuestra región.</p>
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-6 mb-4 mb-lg-0 pe-lg-5">
+            <h2 class="section-title text-dark" style="font-size: 2.2rem;">Acerca de la Plataforma</h2>
+            <p class="text-muted mb-3" style="font-size: 1.05rem; text-align: justify;">
+                La creación de una página web dedicada al Rescate Digital de la Historia Musical Lojana surge de la necesidad de preservar, difundir y revalorizar el patrimonio cultural de Loja, reconocido como uno de los principales referentes musicales del Ecuador.
+            </p>
+            <p class="text-muted mb-3" style="font-size: 0.95rem; text-align: justify;">
+                A lo largo del tiempo, gran parte de la riqueza musical lojana incluyendo compositores, intérpretes, obras y tradiciones ha permanecido dispersa, poco documentada o en riesgo de perderse debido al paso del tiempo y la falta de digitalización. Por ello, este proyecto busca recopilar y organizar esta información en un espacio accesible, moderno y dinámico.
+            </p>
+            <p class="text-muted mb-3" style="font-size: 0.95rem; text-align: justify;">
+                La plataforma digital permitirá que nuevas generaciones conozcan y se conecten con sus raíces culturales, al mismo tiempo que facilita el acceso a investigadores, estudiantes y público en general interesado en la música lojana. Además, contribuirá a fortalecer la identidad cultural y promover el reconocimiento de los artistas locales.
+            </p>
+            <p class="text-muted mb-4" style="font-size: 0.95rem; text-align: justify;">
+                En un mundo cada vez más digital, preservar la historia musical a través de herramientas tecnológicas no solo es una oportunidad, sino una responsabilidad para garantizar que este legado perdure en el tiempo.
+            </p>
+            <div class="mt-4 p-4 rounded shadow-sm" style="background-color: #f9fafb; border-left: 5px solid var(--primary-color);">
+                <h5 class="fw-bold mb-1" style="color: var(--primary-color); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Desarrolladores Web:</h5>
+                <h3 class="text-gold fw-bold mb-0">Jostin Torres y Jair Chavez</h3>
+            </div>
         </div>
-        <a href="{% url 'artistas_lista' %}" class="text-dark fw-bold text-decoration-none">Ver todos <i class="fas fa-arrow-right ms-1"></i></a>
-    </div>
-
-    <div class="swiper artistSwiper pb-5 mt-2 px-2">
-        <div class="swiper-wrapper">
-            {% for artista in artistas %}
-            <div class="swiper-slide h-auto">
-                <a href="{% url 'artista_detalle' artista.id %}" class="text-decoration-none d-block h-100">
-                    <div class="card artist-card h-100 text-start border-0 shadow-sm">
-                        <div class="artist-img-wrapper" style="height: 380px;">
-                            {% if artista.imagen_perfil %}
-                                <img src="{{ artista.imagen_perfil.url }}" class="artist-img" alt="{{ artista.nombre }}">
-                            {% else %}
-                                <div class="artist-img d-flex align-items-center justify-content-center bg-dark text-white opacity-75">
-                                    <i class="fas fa-user-tie fa-6x"></i>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="artist-info d-flex flex-column flex-grow-1 p-4 bg-white">
-                            <h4 class="artist-name mb-1 fw-bold text-dark">{{ artista.nombre }}</h4>
-                            <span class="artist-role text-success fw-bold text-uppercase small mb-3 letter-spacing-1">Músico y Compositor</span>
-                            <div class="mt-auto border-top pt-3">
-                                <p class="artist-quote mb-0 text-muted fst-italic">"{{ artista.biografia|truncatewords:15 }}"</p>
-                            </div>
-                        </div>
+        <div class="col-lg-6">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card bg-white shadow-sm border-0 h-100 p-4 transition-hover">
+                        <i class="fas fa-lightbulb fa-2x mb-3" style="color: var(--accent-color);"></i>
+                        <h5 class="fw-bold" style="color: var(--primary-color);">Curiosidad <span class="text-gold">#1</span></h5>
+                        <p class="text-muted small mb-0">El pasillo ecuatoriano tiene fuertes raíces en los valses europeos, adaptados brillantemente al sentimiento andino característico de Loja.</p>
                     </div>
-                </a>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-white shadow-sm border-0 h-100 p-4 transition-hover">
+                        <i class="fas fa-book-open fa-2x mb-3" style="color: var(--accent-color);"></i>
+                        <h5 class="fw-bold" style="color: var(--primary-color);">Archivo Vivo</h5>
+                        <p class="text-muted small mb-0">En la época de oro de la música lojana, se registraron más de 400 partituras manuscritas invaluables para nuestro patrimonio.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-white shadow-sm border-0 h-100 p-4 transition-hover">
+                        <i class="fas fa-globe-americas fa-2x mb-3" style="color: var(--accent-color);"></i>
+                        <h5 class="fw-bold" style="color: var(--primary-color);">Capital Musical</h5>
+                        <p class="text-muted small mb-0">Loja es reconocida a nivel sudamericano por exportar grandes talentos históricos en el ámbito de la música sacra y académica.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 h-100 p-4 transition-hover" style="background-color: var(--primary-color) !important;">
+                        <i class="fas fa-users-cog fa-2x mb-3 text-gold"></i>
+                        <h5 class="fw-bold text-white">Únete</h5>
+                        <p class="small text-white opacity-75 mb-0">La plataforma planea permitir aportes de la comunidad para contar historias inéditas sobre nuestros artistas.</p>
+                    </div>
+                </div>
             </div>
-            {% empty %}
-            <div class="swiper-slide text-center text-muted w-100 py-5">
-                <p>Aún no hay artistas registrados en la base de datos.</p>
-            </div>
-            {% endfor %}
         </div>
-        <div class="swiper-pagination mt-4"></div>
     </div>
 </section>
 
@@ -111,35 +123,4 @@
     </div>
 </section>
 
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var swiper = new Swiper(".artistSwiper", {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            grabCursor: true,
-            pagination: {
-                el: ".swiper-pagination",
-                clickable: true,
-                dynamicBullets: true,
-            },
-            breakpoints: {
-                576: {
-                    slidesPerView: 2,
-                    spaceBetween: 20,
-                },
-                992: {
-                    slidesPerView: 3,
-                    spaceBetween: 30,
-                },
-            },
-            autoplay: {
-                delay: 3500,
-                disableOnInteraction: false,
-            },
-        });
-    });
-</script>
 {% endblock %}
