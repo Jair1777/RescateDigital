@@ -42,18 +42,26 @@
             </div>
             
             <div class="d-flex align-items-center gap-3 d-none d-lg-flex">
-                <!-- Lang Selector Pill (Visual mimic for now) -->
-                <div class="lang-selector-group border">
-                    <span class="lang-btn active">ES</span>
-                    <span class="lang-btn">EN</span>
-                    <span class="lang-btn">FR</span>
-                </div>
+                <!-- Lang Selector Form -->
+                <form action="{% url 'set_language' %}" method="post" class="d-inline mb-0">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ redirect_to }}">
+                    <div class="lang-selector-group border d-flex">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% for language in LANGUAGES %}
+                            <button type="submit" name="language" value="{{ language.0 }}" class="lang-btn border-0 {% if language.0 == LANGUAGE_CODE %}active{% endif %}" style="background:transparent; cursor:pointer;">
+                                {{ language.0|upper }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </form>
                 
                 <!-- Authentication status -->
                 {% if user.is_authenticated %}
                     <form method="post" action="{% url 'logout' %}" style="display:inline;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-link text-dark mt-1" title="Cerrar Sessión">
+                        <button type="submit" class="btn btn-link text-dark mt-1" title="{% trans 'Cerrar Sesión' %}">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </form>
@@ -64,7 +72,7 @@
                         <i class="fas fa-user-circle"></i>
                     </a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">Login</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">{% trans "Login" %}</a>
                 {% endif %}
             </div>
         </div>
@@ -79,30 +87,30 @@
             <div class="row mb-5">
                 <div class="col-md-5 mb-4">
                     <h5 class="text-white fw-bold mb-3"><i class="fas fa-music text-warning"></i> RESCATE DIGITAL</h5>
-                    <p class="pe-md-5">Un proyecto destinado a la recuperación, digitalización y puesta en valor del patrimonio musical de la ciudad de Loja, Ecuador.</p>
+                    <p class="pe-md-5">{% trans "Un proyecto destinado a la recuperación, digitalización y puesta en valor del patrimonio musical de la ciudad de Loja, Ecuador." %}</p>
                     <div class="d-flex gap-3 mt-4">
                         <a href="#" class="text-muted"><i class="fas fa-share-alt"></i></a>
                         <a href="#" class="text-muted"><i class="fas fa-envelope"></i></a>
                     </div>
                 </div>
                 <div class="col-md-3 mb-4">
-                    <h5 class="footer-title">Navegación</h5>
-                    <a href="{% url 'inicio' %}" class="footer-link">Inicio</a>
-                    <a href="{% url 'historia' %}" class="footer-link">Historia Musical</a>
-                    <a href="#" class="footer-link">Archivo Digital</a>
-                    <a href="{% url 'artistas_lista' %}" class="footer-link">Artistas</a>
+                    <h5 class="footer-title">{% trans "Navegación" %}</h5>
+                    <a href="{% url 'inicio' %}" class="footer-link">{% trans "Inicio" %}</a>
+                    <a href="{% url 'historia' %}" class="footer-link">{% trans "Historia Musical" %}</a>
+                    <a href="#" class="footer-link">{% trans "Archivo Digital" %}</a>
+                    <a href="{% url 'artistas_lista' %}" class="footer-link">{% trans "Artistas" %}</a>
                 </div>
                 <div class="col-md-4 mb-4">
-                    <h5 class="footer-title">Institucional</h5>
-                    <a href="#" class="footer-link">Sobre el Proyecto</a>
-                    <a href="#" class="footer-link">Investigadores</a>
-                    <a href="#" class="footer-link">Alianzas</a>
-                    <a href="#" class="footer-link">Contacto</a>
+                    <h5 class="footer-title">{% trans "Institucional" %}</h5>
+                    <a href="#" class="footer-link">{% trans "Sobre el Proyecto" %}</a>
+                    <a href="#" class="footer-link">{% trans "Investigadores" %}</a>
+                    <a href="#" class="footer-link">{% trans "Alianzas" %}</a>
+                    <a href="#" class="footer-link">{% trans "Contacto" %}</a>
                 </div>
             </div>
             
             <div class="text-center pt-4 border-top border-secondary">
-                <p class="mb-0">© {% now "Y" %} Rescate Digital de la Historia Musical Lojana. Todos los derechos reservados.</p>
+                <p class="mb-0">© {% now "Y" %} {% trans "Rescate Digital de la Historia Musical Lojana. Todos los derechos reservados." %}</p>
             </div>
         </div>
     </footer>
