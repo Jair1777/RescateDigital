@@ -34,7 +34,8 @@ def jugar_quiz(request, quiz_id):
         request.user.puntos_acumulados += puntos_ganados
         request.user.save()
         
-        messages.success(request, f'¡Completaste el quiz! Respuestas correctas: {correctas}/{total_preguntas}. Ganaste {puntos_ganados} puntos.')
+        incorrectas = total_preguntas - correctas
+        messages.success(request, f'¡Completaste el quiz! ✅ Acertaste {correctas} y ❌ Fallaste {incorrectas}. Has ganado {puntos_ganados} puntos (10 pts por acierto).')
         return redirect('juegos_lista')
         
     return render(request, 'gamificacion/jugar_quiz.html', {'quiz': quiz, 'preguntas': preguntas})

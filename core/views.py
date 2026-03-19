@@ -8,3 +8,6 @@ def inicio(request):
 
 def historia(request):
     return render(request, 'core/historia.html')
+
+def sobre_proyecto(request):
+    return render(request, 'core/sobre_proyecto.html')
