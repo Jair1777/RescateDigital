@@ -46,9 +46,9 @@
                                     <td class="py-4 text-start ps-4">
                                         <div class="d-flex align-items-center">
                                             <div class="rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background-color: var(--primary-color);">
-                                                <span class="fw-bold">{{ usuario.username|make_list|first|upper }}</span>
+                                                <span class="fw-bold">{{ usuario.first_name|default:usuario.username|make_list|first|upper }}</span>
                                             </div>
-                                            <span class="fs-6 fw-bold text-dark">{{ usuario.username }}</span>
+                                            <span class="fs-6 fw-bold text-dark">{{ usuario.first_name|default:usuario.username }}</span>
                                         </div>
                                     </td>
                                     <td class="py-4">

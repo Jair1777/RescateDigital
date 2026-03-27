@@ -3,7 +3,11 @@ from django.db import models
 class Artista(models.Model):
     nombre = models.CharField(max_length=200)
     fecha_nacimiento = models.DateField(null=True, blank=True)
+    periodo_vida = models.CharField(max_length=200, blank=True, help_text="Ej: 1 de marzo de 1876 – 1935")
     biografia = models.TextField()
+    composiciones_resumen = models.TextField(blank=True)
+    obras_destacadas_resumen = models.TextField(blank=True)
+    legado_resumen = models.TextField(blank=True)
     imagen_perfil = models.ImageField(upload_to='artistas/', null=True, blank=True)
 
     def __str__(self):

@@ -22,6 +22,7 @@ class Opcion(models.Model):
     def __str__(self):
         return f'{self.texto} ({"Correcta" if self.es_correcta else "Incorrecta"})'
 
+
 class Logro(models.Model):
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField()
@@ -30,3 +31,16 @@ class Logro(models.Model):
 
     def __str__(self):
         return f'{self.nombre} ({self.puntos_requeridos} pts)'
+
+class ResultadoQuiz(models.Model):
+    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    puntos = models.IntegerField()
+    fecha_completado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('usuario', 'quiz')
+        verbose_name_plural = "Resultados de Quizzes"
+
+    def __str__(self):
+        return f'{self.usuario.username} - {self.quiz.titulo} ({self.puntos} pts)'
