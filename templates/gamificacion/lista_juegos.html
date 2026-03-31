@@ -43,7 +43,13 @@
                 <div class="card-body text-center">
                     <h5 class="fw-bold mb-3" style="color: var(--primary-color);">{{ quiz.titulo }}</h5>
                     <p class="card-text text-muted mb-4">{{ quiz.descripcion }}</p>
-                    <a href="{% url 'jugar_quiz' quiz.id %}" class="btn btn-dark-green rounded-pill w-100 shadow-sm fw-bold">{% trans "Comenzar Reto" %}</a>
+                    {% if quiz.id in completados_ids %}
+                        <button class="btn btn-secondary rounded-pill w-100 shadow-sm fw-bold" disabled>
+                            <i class="fas fa-check-circle me-1"></i> {% trans "Respondido" %}
+                        </button>
+                    {% else %}
+                        <a href="{% url 'jugar_quiz' quiz.id %}" class="btn btn-dark-green rounded-pill w-100 shadow-sm fw-bold">{% trans "Comenzar Reto" %}</a>
+                    {% endif %}
                 </div>
                 <div class="card-footer border-0 text-center py-3" style="background-color: #f8f9fa;">
                     <span class="badge text-dark rounded-pill fw-normal" style="background-color: #e5e7eb;">

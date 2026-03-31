@@ -86,18 +86,30 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_URL = 'login'
 
+
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-import dj_database_url
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://neondb_owner:npg_OaKX6P1mrvSM@ep-morning-snow-anew1cnd-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require',
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
+try:
+    import dj_database_url
+    # Use environment variable DATABASE_URL if available, otherwise fallback to SQLite
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=f'sqlite:///{os.path.join(BASE_DIR, "db.sqlite3")}',
+            conn_max_age=600,
+        )
+    }
+    # If the environment specifies Neon, we use it with SSL requirements
+    if 'neon.tech' in os.environ.get('DATABASE_URL', ''):
+        DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+except ImportError:
+    # Basic fallback if dj-database-url is not installed
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation

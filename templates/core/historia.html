@@ -11,11 +11,11 @@
         <p class="text-muted lead mb-5 px-3 mx-auto" style="max-width: 800px;">
             {% blocktrans %}Viaja a través de los siglos y descubre cómo Loja se convirtió en el epicentro sonoro del Ecuador. Explora nuestra historia mediante esta línea de tiempo interactiva.{% endblocktrans %}
         </p>
-        
+
         <!-- Swiper Container -->
         <div class="swiper timelineSwiper pb-5 px-lg-5">
             <div class="swiper-wrapper">
-                
+
                 <!-- Slide 1 -->
                 <div class="swiper-slide h-auto">
                     <div class="timeline-card p-4 bg-white shadow-sm rounded-4 text-start border-top border-4 border-warning h-100 transition-hover">
@@ -113,6 +113,7 @@
                         </ul>
                     </div>
                 </div>
+
             </div>
             <!-- Pagination inside container -->
             <div class="swiper-pagination mt-4 position-relative bottom-0"></div>
@@ -121,6 +122,7 @@
             <div class="swiper-button-next" style="color: var(--accent-color); right: 0;"></div>
         </div>
 
+        <!-- Características principales -->
         <div class="mt-5 p-4 bg-white rounded shadow-sm text-start mx-auto border" style="max-width: 900px; border-left: 5px solid var(--accent-color) !important;">
             <h4 class="fw-bold mb-4" style="color: var(--primary-color);"><i class="fas fa-guitar text-gold me-2"></i>{% trans "Características principales de la música lojana" %}</h4>
             <div class="row text-muted fw-medium g-3">
@@ -136,8 +138,8 @@
 
 {% block extra_js %}
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        if(typeof Swiper !== 'undefined') {
+    document.addEventListener("DOMContentLoaded", function () {
+        if (typeof Swiper !== 'undefined') {
             var timelineSwiper = new Swiper('.timelineSwiper', {
                 slidesPerView: 1,
                 spaceBetween: 20,
@@ -164,4 +166,4 @@
         }
     });
 </script>
-{% endblock %}
+{% endblock %}
