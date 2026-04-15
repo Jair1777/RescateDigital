@@ -38,50 +38,7 @@
 {% endblock %}
 
 {% block content %}
-<!-- Top Right User Controls (Desktop only for Home page) -->
-<div class="d-none d-lg-flex position-absolute end-0 top-0 p-4 z-3 gap-3" style="pointer-events: none;">
-    <div class="d-flex gap-3 align-items-center" style="pointer-events: auto;">
-        {% if user.is_authenticated %}
-        <!-- Notifications Desktop -->
-        <div class="dropdown">
-            <a href="#" class="top-user-btn d-flex align-items-center justify-content-center text-decoration-none shadow-sm position-relative" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: rgba(255,255,255,0.2) !important; color:#fff !important; border: 1px solid rgba(255,255,255,0.4);">
-                <i class="fas fa-bell"></i>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow" style="font-size: 0.65rem; border: 2px solid white; transform: translate(-30%, -20%) !important;">2</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="border-radius: 12px; min-width: 260px; margin-top: 10px;">
-                <li class="px-3 py-2 text-center border-bottom mb-2"><div class="fw-bold text-dark">{% trans "Notificaciones" %}</div></li>
-                <li><a class="dropdown-item d-flex align-items-center py-2" href="#"><i class="fas fa-sync text-success me-3"></i><span>{% trans "Actualización disponible" %}</span></a></li>
-                <li><a class="dropdown-item d-flex align-items-center py-2" href="{% url 'juegos_lista' %}"><i class="fas fa-gamepad text-primary me-3"></i><span>{% trans "Nuevo Quiz habilitado" %}</span></a></li>
-                <li class="border-top mt-2"><a class="dropdown-item text-center text-success py-2" href="#"><span class="small fw-bold">{% trans "Ver todas" %}</span></a></li>
-            </ul>
-        </div>
-        <!-- Profile Desktop -->
-        <div class="dropdown">
-            <a href="#" class="top-user-btn d-flex align-items-center justify-content-center text-decoration-none shadow-sm" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: rgba(255,255,255,0.2) !important; color:#fff !important; border: 1px solid rgba(255,255,255,0.4);">
-                <i class="fas fa-user"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="border-radius: 12px; min-width: 220px; margin-top: 10px;">
-                <li class="px-3 py-3 text-center border-bottom mb-2 bg-light rounded-top" style="margin-top:-8px;">
-                    <div class="fw-bold text-dark text-truncate mx-auto" style="max-width: 180px; font-size: 1.1rem;">{{ user.username }}</div>
-                    <div class="small text-muted text-truncate mx-auto" style="max-width: 180px;">{{ user.email }}</div>
-                </li>
-                <li><a class="dropdown-item d-flex align-items-center px-3 py-2 gap-2" href="{% url 'ranking' %}"><i class="fas fa-medal text-warning" style="width: 20px; text-align:center;"></i><span class="fw-semibold">{% trans "Mi Ranking" %}</span></a></li>
-                <li><a class="dropdown-item d-flex align-items-center px-3 py-2 gap-2" href="#"><i class="fas fa-cog text-muted" style="width: 20px; text-align:center;"></i><span class="fw-semibold">{% trans "Configuración" %}</span></a></li>
-                <li class="border-top mt-2">
-                    <form method="post" action="{% url 'logout' %}" class="m-0 p-0">
-                        {% csrf_token %}
-                        <button type="submit" class="dropdown-item text-danger d-flex align-items-center px-3 py-2 gap-2 w-100 text-start border-0 fw-bold">
-                            <i class="fas fa-sign-out-alt" style="width: 20px; text-align:center;"></i><span>{% trans "Cerrar Sesión" %}</span>
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-        {% else %}
-        <a href="{% url 'login' %}" class="btn btn-gold rounded-pill px-4 shadow-sm" style="padding: 10px 24px;">{% trans "Ingresar" %}</a>
-        {% endif %}
-    </div>
-</div>
+
 
 <!-- HERO SECTION -->
 <header class="hero-section text-center position-relative overflow-hidden">
