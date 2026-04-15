@@ -25,6 +25,7 @@ urlpatterns = [
     path('artistas/', include('artistas.urls')),
     path('juegos/', include('gamificacion.urls')),
     path('usuarios/', include('usuarios.urls')),
+    path('musica/', include('musica.urls')),
     path('i18n/', include('django.conf.urls.i18n')),
 ]
 

@@ -68,12 +68,12 @@
     </style>
 </head>
 <body onload="document.body.classList.add('loaded')">
-    <nav class="navbar navbar-expand-lg sticky-top px-3 position-relative overflow-hidden">
+    <nav class="navbar navbar-expand-lg sticky-top px-3 position-relative">
         
         <div class="container-fluid mx-md-4 position-relative z-2">
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
-                <div class="brand-icon-wrapper" style="width: 40px; text-align: center;"><i class="fas fa-music text-success"></i></div> 
-                <span class="nav-text ms-2">{% trans "RESCATE DIGITAL" %}</span>
+            <a class="navbar-brand d-flex flex-column align-items-center justify-content-center text-center w-100" href="{% url 'inicio' %}">
+                <div class="brand-icon-wrapper mb-2" style="width: 40px; text-align: center;"><i class="fas fa-music text-success"></i></div> 
+                <span class="nav-text" style="font-size: 0.85rem; white-space: normal; line-height: 1.2; text-shadow: none;">{% trans "RESCATE DIGITAL" %}</span>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -82,100 +82,136 @@
             
             <div class="collapse navbar-collapse" id="navbarNav" style="width: 100%;">
                 <ul class="navbar-nav w-100">
-                    <li class="nav-item"><a class="nav-link px-3 d-flex align-items-center" href="{% url 'inicio' %}"><div style="width: 30px; text-align: center;"><i class="fas fa-home"></i></div> <span class="nav-text ms-2">{% trans "Inicio" %}</span></a></li>
-                    <li class="nav-item"><a class="nav-link px-3 d-flex align-items-center" href="{% url 'proyecto' %}"><div style="width: 30px; text-align: center;"><i class="fas fa-info-circle"></i></div> <span class="nav-text ms-2">{% trans "Proyecto" %}</span></a></li>
-                    <li class="nav-item"><a class="nav-link px-3 d-flex align-items-center" href="{% url 'historia' %}"><div style="width: 30px; text-align: center;"><i class="fas fa-book"></i></div> <span class="nav-text ms-2">{% trans "Historia musical" %}</span></a></li>
-                    <li class="nav-item"><a class="nav-link px-3 d-flex align-items-center" href="{% url 'artistas_lista' %}"><div style="width: 30px; text-align: center;"><i class="fas fa-users"></i></div> <span class="nav-text ms-2">{% trans "Artistas" %}</span></a></li>
-                    <li class="nav-item"><a class="nav-link px-3 d-flex align-items-center" href="{% url 'juegos_lista' %}"><div style="width: 30px; text-align: center;"><i class="fas fa-gamepad"></i></div> <span class="nav-text ms-2">{% trans "Juegos" %}</span></a></li>
+                    <li class="nav-item"><a class="nav-link side-link" href="{% url 'inicio' %}"><div class="nav-icon"><i class="fas fa-home"></i></div><span class="nav-text">{% trans "Inicio" %}</span></a></li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link side-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="nav-icon"><i class="fas fa-info-circle"></i></div> 
+                            <span class="nav-text">{% trans "Proyecto" %}</span>
+                        </a>
+                        <ul class="dropdown-menu shadow border-0" style="border-radius: 12px; z-index:1060; min-width: 200px;">
+                            <li><a class="dropdown-item" href="{% url 'proyecto' %}#acerca"><i class="fas fa-book-open me-2 text-info"></i> {% trans "Acerca de la página" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'proyecto' %}#desarrolladores"><i class="fas fa-users me-2 text-success"></i> {% trans "Desarrolladores Web" %}</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link side-link" href="{% url 'historia' %}"><div class="nav-icon"><i class="fas fa-book"></i></div><span class="nav-text">{% trans "Historia musical" %}</span></a></li>
+                    <li class="nav-item"><a class="nav-link side-link" href="{% url 'artistas_lista' %}"><div class="nav-icon"><i class="fas fa-users"></i></div><span class="nav-text">{% trans "Artistas" %}</span></a></li>
+                    <li class="nav-item"><a class="nav-link side-link" href="{% url 'inicio_musica' %}"><div class="nav-icon"><i class="fas fa-headphones" style="color:var(--accent-color);"></i></div><span class="nav-text">{% trans "Música Lojana" %}</span></a></li>
+                    <li class="nav-item"><a class="nav-link side-link" href="{% url 'juegos_lista' %}"><div class="nav-icon"><i class="fas fa-gamepad"></i></div><span class="nav-text">{% trans "Juegos" %}</span></a></li>
                 </ul>
             </div>
             
-            <div class="d-flex align-items-center gap-3 d-none d-lg-flex">
-                <!-- Lang Selector Form -->
-                <form action="{% url 'set_language' %}" method="post" class="d-inline mb-0">
-                    {% csrf_token %}
-                    <input name="next" type="hidden" value="{{ redirect_to }}">
-                    <div class="lang-selector-group border d-flex">
-                        {% get_current_language as LANGUAGE_CODE %}
-                        {% get_available_languages as LANGUAGES %}
-                        {% for language in LANGUAGES %}
-                            <button type="submit" name="language" value="{{ language.0 }}" class="lang-btn border-0 {% if language.0 == LANGUAGE_CODE %}active{% endif %}" style="background:transparent; cursor:pointer;">
-                                {{ language.0|upper }}
-                            </button>
-                        {% endfor %}
-                    </div>
-                </form>
+            <ul class="navbar-nav w-100 mt-auto pb-3">
+                <!-- Theme Toggle Button -->
+                <li class="nav-item w-100 mb-2">
+                    <a href="#" id="theme-toggle" class="nav-link side-link w-100">
+                        <div class="nav-icon"><i class="fas fa-moon" id="theme-icon"></i></div>
+                        <span class="nav-text theme-text fw-bold">{% trans "Modo Oscuro" %}</span>
+                    </a>
+                </li>
+
+                <!-- Lang Selector via Dropdown -->
+                <li class="nav-item dropdown w-100 mb-2">
+                    <a href="#" class="nav-link side-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="nav-icon"><i class="fas fa-language"></i></div>
+                        <span class="nav-text fw-bold">{% trans "Idioma" %}</span>
+                    </a>
+                    <ul class="dropdown-menu shadow border-0 p-2" style="border-radius: 12px; z-index:1060; min-width: 150px;">
+                        <form action="{% url 'set_language' %}" method="post" class="d-flex flex-column m-0">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ redirect_to }}">
+                            {% get_current_language as LANGUAGE_CODE %}
+                            {% get_available_languages as LANGUAGES %}
+                            {% for language in LANGUAGES %}
+                                <button type="submit" name="language" value="{{ language.0 }}" class="dropdown-item py-2 text-center rounded {% if language.0 == LANGUAGE_CODE %}bg-success text-white fw-bold{% else %}text-dark{% endif %}">
+                                    {{ language.0|upper }}
+                                </button>
+                            {% endfor %}
+                        </form>
+                    </ul>
+                </li>
                 
                 <!-- Authentication status -->
                 {% if user.is_authenticated %}
-                    <!-- Notifications Dropdown -->
-                    <div class="dropdown">
-                        <button class="btn btn-light rounded-circle shadow-sm border p-2 text-warning position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-bell"></i>
-                            <span class="notification-badge">2</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="width: 280px; border-radius: 12px;">
-                            <li class="px-3 py-2 border-bottom">
-                                <h6 class="mb-0 fw-bold">{% trans "Notificaciones" %}</h6>
+                    <!-- Notifications Dropdown (Mobile shown only) -->
+                    <li class="nav-item dropdown w-100 mb-2 d-lg-none">
+                        <a href="#" class="nav-link side-link dropdown-toggle text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="nav-icon position-relative">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge shadow-sm" style="top:-3px; right:-5px; font-size: 0.55rem; padding: 2px 4px; line-height:1;">2</span>
+                            </div>
+                            <span class="nav-text fw-bold">{% trans "Notificaciones" %}</span>
+                        </a>
+                        <ul class="dropdown-menu shadow border-0" style="border-radius: 12px; z-index:1060; min-width: 220px;">
+                            <li class="px-3 py-2 text-center border-bottom mb-2">
+                                <div class="fw-bold text-dark">{% trans "Notificaciones" %}</div>
                             </li>
                             <li>
-                                <a class="dropdown-item px-3 py-2 d-flex align-items-start gap-2" href="#">
-                                    <div class="bg-success bg-opacity-10 p-2 rounded-circle">
-                                        <i class="fas fa-sync text-success small"></i>
-                                    </div>
-                                    <div>
-                                        <p class="mb-0 small fw-bold">{% trans "Plataforma Actualizada" %}</p>
-                                        <p class="mb-0 x-small text-muted">{% trans "Hemos agregado nuevas biografías de artistas." %}</p>
-                                    </div>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <i class="fas fa-sync text-success me-2"></i>
+                                    <span>{% trans "Actualización" %}</span>
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item px-3 py-2 d-flex align-items-start gap-2" href="{% url 'juegos_lista' %}">
-                                    <div class="bg-primary bg-opacity-10 p-2 rounded-circle">
-                                        <i class="fas fa-gamepad text-primary small"></i>
-                                    </div>
-                                    <div>
-                                        <p class="mb-0 small fw-bold">{% trans "Nuevo Quiz Disponible" %}</p>
-                                        <p class="mb-0 x-small text-muted">{% trans "Pon a prueba tu oído musical." %}</p>
-                                    </div>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'juegos_lista' %}">
+                                    <i class="fas fa-gamepad text-primary me-2"></i>
+                                    <span>{% trans "Nuevo Quiz" %}</span>
                                 </a>
                             </li>
-                            <li class="border-top mt-1">
-                                <a class="dropdown-item text-center small text-success fw-bold" href="#">{% trans "Ver todas" %}</a>
+                            <li class="border-top mt-2">
+                                <a class="dropdown-item text-center text-success" href="#">
+                                    <span class="small fw-bold">{% trans "Ver todas" %}</span>
+                                </a>
                             </li>
                         </ul>
-                    </div>
+                    </li>
 
-                    <!-- Profile Dropdown -->
-                    <div class="dropdown">
-                        <button class="btn btn-light rounded-circle shadow-sm border p-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 12px;">
+                    <li class="nav-item dropdown w-100 d-lg-none">
+                        <a href="#" class="nav-link side-link dropdown-toggle text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="nav-icon"><i class="fas fa-user-circle"></i></div>
+                            <span class="nav-text fw-bold">{% trans "Perfil" %}</span>
+                        </a>
+                        <ul class="dropdown-menu shadow border-0" style="border-radius: 12px; z-index:1060; min-width: 200px;">
                             <li class="px-3 py-2 text-center border-bottom mb-2">
-                                <div class="fw-bold text-dark">{{ user.username }}</div>
-                                <div class="small text-muted">{{ user.email }}</div>
+                                <div class="fw-bold text-dark text-truncate mx-auto" style="max-width: 180px;">{{ user.username }}</div>
+                                <div class="small text-muted text-truncate mx-auto" style="max-width: 180px;">{{ user.email }}</div>
                             </li>
-                            <li><a class="dropdown-item" href="{% url 'ranking' %}"><i class="fas fa-medal me-2 text-warning"></i><span>{% trans "Mi Ranking" %}</span></a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2 text-muted"></i><span>{% trans "Configuración" %}</span></a></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center px-3 gap-2" href="{% url 'ranking' %}">
+                                    <i class="fas fa-medal text-warning" style="width: 16px; text-align:center;"></i>
+                                    <span>{% trans "Mi Ranking" %}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center px-3 gap-2" href="#">
+                                    <i class="fas fa-cog text-muted" style="width: 16px; text-align:center;"></i>
+                                    <span>{% trans "Configuración" %}</span>
+                                </a>
+                            </li>
                             <li class="border-top mt-2">
-                                <form method="post" action="{% url 'logout' %}">
+                                <form method="post" action="{% url 'logout' %}" class="m-0 p-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="fas fa-sign-out-alt me-2"></i><span>{% trans "Cerrar Sesión" %}</span>
+                                    <button type="submit" class="dropdown-item text-danger d-flex align-items-center px-3 gap-2 w-100 text-start border-0">
+                                        <i class="fas fa-sign-out-alt" style="width: 16px; text-align:center;"></i>
+                                        <span>{% trans "Cerrar Sesión" %}</span>
                                     </button>
                                 </form>
                             </li>
                         </ul>
-                    </div>
+                    </li>
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold login-btn-sidebar"><i class="fas fa-sign-in-alt d-lg-none me-2"></i><span>{% trans "Ingresar" %}</span></a>
+                <li class="nav-item w-100 d-lg-none">
+                        <a href="{% url 'login' %}" class="nav-link side-link w-100 text-dark">
+                            <div class="nav-icon"><i class="fas fa-sign-in-alt"></i></div>
+                            <span class="nav-text fw-bold">{% trans "Ingresar" %}</span>
+                        </a>
+                    </li>
                 {% endif %}
-            </div>
+            </ul>
         </div>
     </nav>
 
-    <div class="main-wrapper flex-grow-1 d-flex flex-column w-100" style="overflow-x: hidden;">
+    <div class="main-wrapper flex-grow-1 d-flex flex-column w-100" style="overflow-x: hidden; position: relative;">
         <main class="flex-grow-1">
             {% block content %}{% endblock %}
         </main>
@@ -213,11 +249,48 @@
     </footer>
     </div> <!-- /main-wrapper -->
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
+        // Dark Mode Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const body = document.body;
+            
+            if (localStorage.getItem('theme') === 'dark') {
+                body.classList.add('bg-dark', 'text-light');
+                if (themeIcon) themeIcon.classList.replace('fa-moon', 'fa-sun');
+            }
+            
+            if (themeToggle) {
+                const themeTextArr = document.querySelectorAll('.theme-text');
+                const updateThemeTexts = (text) => themeTextArr.forEach(el => el.textContent = text);
+                
+                if (localStorage.getItem('theme') === 'dark') {
+                    updateThemeTexts('Modo Claro');
+                }
+                
+                themeToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    body.classList.toggle('bg-dark');
+                    body.classList.toggle('text-light');
+                    
+                    if (body.classList.contains('bg-dark')) {
+                        localStorage.setItem('theme', 'dark');
+                        if (themeIcon) themeIcon.classList.replace('fa-moon', 'fa-sun');
+                        updateThemeTexts('Modo Claro');
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        if (themeIcon) themeIcon.classList.replace('fa-sun', 'fa-moon');
+                        updateThemeTexts('Modo Oscuro');
+                    }
+                });
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.add('loaded');
             
@@ -225,7 +298,15 @@
             const links = document.querySelectorAll('a:not([target="_blank"]):not([href^="#"])');
             links.forEach(link => {
                 link.addEventListener('click', function(e) {
-                    if (link.hostname === window.location.hostname && !this.hasAttribute('download')) {
+                    const currentUrl = new URL(window.location.href);
+                    const targetUrl = new URL(this.href, window.location.href);
+                    
+                    // Do not fade out if navigating to an anchor on the same page
+                    if (currentUrl.pathname === targetUrl.pathname && currentUrl.search === targetUrl.search) {
+                        return; 
+                    }
+                    
+                    if (link.hostname === window.location.hostname && !this.hasAttribute('download') && !this.classList.contains('dropdown-toggle')) {
                         e.preventDefault();
                         const target = this.href;
                         document.body.classList.remove('loaded');

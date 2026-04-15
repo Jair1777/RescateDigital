@@ -141,6 +141,7 @@
         font-family: 'Press Start 2P', system-ui, -apple-system, sans-serif;
         background: linear-gradient(to right, #f83600 0%, #f9d423 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
         text-shadow: 0 0 10px rgba(248, 54, 0, 0.5);
         letter-spacing: 2px;
@@ -244,13 +245,21 @@
                             </div>
                             {% endif %}
                             
-                            <div class="p-3" style="background: linear-gradient(45deg, {% if item.is_unlocked %}var(--primary-color), var(--secondary-color){% else %}#607d8b, #455a64{% endif %});">
+                            {% if item.is_unlocked %}
+                            <div class="p-3" style="background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));">
+                            {% else %}
+                            <div class="p-3" style="background: linear-gradient(45deg, #607d8b, #455a64);">
+                            {% endif %}
                                 <div class="rounded-circle bg-white {% if item.is_unlocked %}text-primary{% else %}text-muted{% endif %} d-flex align-items-center justify-content-center mx-auto shadow-sm fw-bold fs-4" style="width: 50px; height: 50px;">
                                     {{ forloop.counter }}
                                 </div>
                             </div>
                             <div class="card-body p-4 bg-white text-center">
-                                <h5 class="fw-bold mb-3" style="color: {% if item.is_unlocked %}var(--primary-color){% else %}#546e7a{% endif %};">{{ item.quiz.translated_titulo }}</h5>
+                                {% if item.is_unlocked %}
+                                <h5 class="fw-bold mb-3" style="color: var(--primary-color);">{{ item.quiz.translated_titulo }}</h5>
+                                {% else %}
+                                <h5 class="fw-bold mb-3" style="color: #546e7a;">{{ item.quiz.translated_titulo }}</h5>
+                                {% endif %}
                                 <p class="small text-muted mb-4">{{ item.quiz.translated_descripcion|truncatewords:20 }}</p>
                                 
                                 {% if item.is_completed %}
