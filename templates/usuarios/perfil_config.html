@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans "Configuración de Perfil - Rescate Digital" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .config-bg {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(135deg, #013b28 0%, #001a11 100%);
+        z-index: -1;
+    }
+
+    .config-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px;
+        padding: 3rem;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        max-width: 600px;
+        width: 100%;
+        margin: 5rem auto;
+        color: white;
+    }
+
+    .profile-upload-wrapper {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 2rem;
+    }
+
+    .profile-preview {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid var(--accent-color);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        background: #2c3e50;
+    }
+
+    .upload-btn {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: var(--accent-color);
+        color: var(--primary-color);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 3px solid #fff;
+    }
+
+    .upload-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        color: rgba(255,255,255,0.8);
+    }
+
+    .form-control-dark {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 12px !important;
+        color: white !important;
+        padding: 0.8rem 1.2rem !important;
+    }
+
+    .form-control-dark:focus {
+        background: rgba(255,255,255,0.1) !important;
+        border-color: var(--accent-color) !important;
+        box-shadow: 0 0 15px rgba(227, 170, 89, 0.2) !important;
+    }
+
+    footer.site-footer {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="config-bg"></div>
+
+<div class="container d-flex align-items-center min-vh-100">
+    <div class="config-card animate__animated animate__fadeInUp">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-1">{% trans "Configuración Personal" %}</h2>
+            <p class="opacity-50 small text-uppercase letter-spacing-2">{% trans "Personaliza tu identidad digital" %}</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="profile-upload-wrapper">
+                {% if user.foto_perfil %}
+                    <img src="{{ user.foto_perfil.url }}" id="imgPreview" class="profile-preview">
+                {% else %}
+                    <div id="imgPlaceholder" class="profile-preview d-flex align-items-center justify-content-center text-white" style="font-size: 3.5rem;">
+                        {{ user.first_name|make_list|first|upper }}
+                    </div>
+                {% endif %}
+                <label for="fotoInput" class="upload-btn">
+                    <i class="fas fa-camera"></i>
+                </label>
+                <input type="file" name="foto" id="fotoInput" class="d-none" accept="image/*" onchange="previewImage(this)">
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">{% trans "Nombre Completo" %}</label>
+                <input type="text" name="nombre" class="form-control form-control-dark" value="{{ user.first_name }}" placeholder="{% trans 'Tu nombre' %}">
+            </div>
+
+            <div class="mb-5">
+                <label class="form-label">{% trans "Correo Electrónico" %}</label>
+                <input type="email" class="form-control form-control-dark" value="{{ user.email }}" disabled style="opacity: 0.5; cursor: not-allowed;">
+                <div class="small mt-2 text-warning opacity-75"><i class="fas fa-info-circle me-1"></i> {% trans "El correo no puede ser modificado." %}</div>
+            </div>
+
+            <div class="d-grid gap-3">
+                <button type="submit" class="btn btn-gold btn-lg rounded-pill py-3 fw-bold">
+                    {% trans "Guardar Cambios" %}
+                </button>
+                <a href="{% url 'inicio' %}" class="btn btn-outline-light btn-lg rounded-pill py-3">
+                    {% trans "Cancelar" %}
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('imgPreview');
+                const placeholder = document.getElementById('imgPlaceholder');
+                
+                if (preview) {
+                    preview.src = e.target.result;
+                } else {
+                    // Si no había imagen antes, reemplazamos el placeholder
+                    const newImg = document.createElement('img');
+                    newImg.id = 'imgPreview';
+                    newImg.className = 'profile-preview';
+                    newImg.src = e.target.result;
+                    placeholder.parentNode.replaceChild(newImg, placeholder);
+                }
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}

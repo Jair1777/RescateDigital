@@ -24,6 +24,10 @@ class Artista(models.Model):
     legado_resumen_en = models.TextField(blank=True)
     legado_resumen_fr = models.TextField(blank=True)
     
+    esencia = models.TextField(blank=True)
+    esencia_en = models.TextField(blank=True)
+    esencia_fr = models.TextField(blank=True)
+    
     imagen_perfil = models.ImageField(upload_to='artistas/', null=True, blank=True)
 
     def get_translated(self, field_name):
@@ -61,6 +65,10 @@ class Artista(models.Model):
     @property
     def translated_legado_resumen(self):
         return self.get_translated('legado_resumen')
+
+    @property
+    def translated_esencia(self):
+        return self.get_translated('esencia')
 
     def __str__(self):
         return self.nombre

@@ -80,3 +80,17 @@ def jugar_quiz(request, quiz_id):
         return redirect('juegos_lista')
         
     return render(request, 'gamificacion/jugar_quiz.html', {'quiz': quiz, 'preguntas': preguntas})
+
+@login_required(login_url='login')
+def desafio_velocidad(request):
+    top_user = Usuario.objects.filter(is_superuser=False).order_by('-puntos_acumulados').first()
+    
+    if request.method == 'POST':
+        puntos = int(request.POST.get('puntos', 0))
+        if puntos > 0:
+            request.user.puntos_acumulados += puntos
+            request.user.save()
+            messages.success(request, f'¡Desafío superado! Ganaste {puntos} puntos por tu velocidad.')
+        return redirect('ranking')
+        
+    return render(request, 'gamificacion/desafio_velocidad.html', {'top_user': top_user})

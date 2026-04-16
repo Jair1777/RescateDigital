@@ -1,59 +1,168 @@
 {% extends 'base.html' %}
 {% load i18n static %}
 
+{% block extra_css %}
+<style>
+    .project-page-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 0% 0%, #0a1128 0%, #050814 50%, #000000 100%);
+        z-index: -1;
+    }
+
+    .abstract-shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.15;
+        z-index: -1;
+        animation: float-shape 20s infinite alternate ease-in-out;
+    }
+
+    @keyframes float-shape {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(10vw, 10vh) scale(1.5); }
+    }
+
+    .project-card-glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px;
+        padding: 4rem;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        color: #ffffff;
+    }
+
+    .project-header-title {
+        font-size: 4rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #e3aa59 0%, #ffcc80 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .dev-profile-header {
+        background: linear-gradient(to right, rgba(227, 170, 89, 0.1), transparent);
+        border-left: 4px solid #e3aa59;
+        padding-left: 20px;
+        margin-bottom: 2rem;
+    }
+
+    .floating-note {
+        position: absolute;
+        font-size: 2rem;
+        color: #e3aa59;
+        opacity: 0.1;
+        pointer-events: none;
+        animation: float-note 10s infinite linear;
+    }
+
+    @keyframes float-note {
+        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+        50% { opacity: 0.15; }
+        100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+
+    /* Hide global footer only for this page */
+    footer.site-footer {
+        display: none !important;
+    }
+
+    /* Override for muted text to be white in this page */
+    .project-card-glass .text-muted {
+        color: rgba(255,255,255,0.85) !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5 mt-4">
-    <div class="row align-items-center mb-5">
-        <div class="col-lg-12 mb-5" id="acerca">
-            <h1 class="display-5 fw-bold text-dark text-center mb-4" style="color: var(--primary-color);">{% trans "Acerca de la Plataforma" %}</h1>
-            <div class="text-muted mx-auto text-center reveal" style="font-size: 1.1rem; max-width: 1000px;" data-animation="animate__fadeIn">
-                <p>
-                    {% blocktrans %}La creación de una página web dedicada al Rescate Digital de la Historia Musical Lojana
-                    surge de la necesidad de preservar, difundir y revalorizar el patrimonio cultural de Loja, reconocido
-                    como uno de los principales referentes musicales del Ecuador.{% endblocktrans %}
-                </p>
-                <p>
-                    {% blocktrans %}A lo largo del tiempo, gran parte de la riqueza musical lojana incluyendo compositores,
-                    intérpretes, obras y tradiciones ha permanecido dispersa, poco documentada o en riesgo de perderse
-                    debido al paso del tiempo y la falta de digitalización. Por ello, este proyecto busca recopilar y
-                    organizar esta información en un espacio accesible, moderno y dinámico.{% endblocktrans %}
-                </p>
-                <p>
-                    {% blocktrans %}La plataforma digital permitirá que nuevas generaciones conozcan y se conecten con sus
-                    raíces culturales, al mismo tiempo que facilita el acceso a investigadores, estudiantes y público en
-                    general interesado en la música lojana. Además, contribuirá a fortalecer la identidad cultural y
-                    promover el reconocimiento de los artistas locales.{% endblocktrans %}
-                </p>
-                <p>
-                    {% blocktrans %}En un mundo cada vez más digital, preservar la historia musical a través de herramientas
-                    tecnológicas no solo es una oportunidad, sino una responsabilidad para garantizar que este legado
-                    perdure en el tiempo.{% endblocktrans %}
-                </p>
+<div class="project-page-bg">
+    <div class="abstract-shape" style="top: 10%; left: 10%; width: 400px; height: 400px; background: #e3aa59;"></div>
+    <div class="abstract-shape" style="bottom: 10%; right: 10%; width: 500px; height: 500px; background: #2d5a27; animation-delay: -5s;"></div>
+</div>
+
+<!-- Floating decorators -->
+<i class="fas fa-music floating-note" style="top: 20%; left: 5%; animation-delay: 0s;"></i>
+<i class="fas fa-quaver floating-note" style="top: 60%; right: 8%; animation-delay: 3s;"></i>
+<i class="fas fa-guitar floating-note" style="bottom: 15%; left: 10%; animation-delay: 6s;"></i>
+
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <!-- Section: About -->
+        <div class="col-lg-11 mb-5 reveal" id="acerca">
+            <div class="text-center mb-5">
+                <span class="badge rounded-pill bg-warning text-dark px-3 py-2 mb-3 text-uppercase fw-bold letter-spacing-1">{% trans "Nuestra Propuesta" %}</span>
+                <h1 class="project-header-title mb-4">{% trans "Acerca de la Plataforma" %}</h1>
+            </div>
+            
+            <div class="project-card-glass p-5 animate__animated animate__fadeIn">
+                <div class="row align-items-center">
+                    <div class="col-md-2 text-center d-none d-md-block">
+                        <i class="fas fa-history fa-5x text-warning opacity-50"></i>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="lead" style="line-height: 1.8; font-size: 1.25rem;">
+                            <p class="mb-4">
+                                {% blocktrans %}La creación de una página web dedicada al Rescate Digital de la Historia Musical Lojana
+                                surge de la necesidad de preservar, difundir y revalorizar el patrimonio cultural de Loja, reconocido
+                                como uno de los principales referentes musicales del Ecuador.{% endblocktrans %}
+                            </p>
+                            <p class="mb-4">
+                                {% blocktrans %}A lo largo del tiempo, gran parte de la riqueza musical lojana —incluyendo compositores,
+                                intérpretes, obras y tradiciones— ha permanecido dispersa o en riesgo de perderse. Este proyecto busca 
+                                organizar esta información en un espacio accesible, moderno y dinámico.{% endblocktrans %}
+                            </p>
+                            <p class="mb-0">
+                                {% blocktrans %}Nuestra plataforma permite que nuevas generaciones se conecten con sus raíces culturales, 
+                                fortaleciendo la identidad y promoviendo el reconocimiento de nuestros artistas locales en un entorno digital.{% endblocktrans %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Desarrolladores Web Centrado -->
-        <div class="col-lg-12 mb-5 reveal" data-animation="animate__fadeInUp" id="desarrolladores">
-            <div class="text-center p-5 rounded-4 shadow-lg mx-auto" style="background-color: #ffffff; border-top: 6px solid var(--primary-color); max-width: 900px;">
-                <i class="fas fa-code fa-3x mb-3" style="color: var(--accent-color);"></i>
-                <h3 class="fw-bold mb-4" style="color: var(--primary-color); text-transform: uppercase; font-size: 1.8rem; letter-spacing: 1px;">
-                    {% trans "Desarrolladores Web" %}</h3>
-                <p class="text-muted mb-4" style="font-size: 1.15rem;">
-                    <strong>{% trans "Somos Jostin Torres, Jair Chávez y Juan Arboleda" %}</strong>, {% blocktrans %}estudiantes de la
-                    Unidad Educativa Fiscomisional La Dolorosa. Nos complace darles la bienvenida a este espacio digital
-                    creado con el propósito de rescatar, preservar y difundir la historia musical lojana.{% endblocktrans %}
-                </p>
-                <p class="text-muted mb-4" style="font-size: 1.1rem;">
-                    {% blocktrans %}Este proyecto nace de nuestro interés por valorar nuestras raíces culturales y
-                    aportar, desde la educación y la tecnología, a la conservación del legado musical de nuestra región.
-                    A través de esta página, buscamos que más personas conozcan la riqueza artística de Loja y se
-                    conecten con su identidad cultural.{% endblocktrans %}
-                </p>
-                <p class="text-muted mb-0 fw-bold" style="font-size: 1.1rem; color: var(--secondary-color);">
-                    {% blocktrans %}Esperamos que este sitio sea una fuente de aprendizaje, inspiración y orgullo para
-                    todos quienes lo visiten.{% endblocktrans %}
-                </p>
+        <!-- Section: Developers -->
+        <div class="col-lg-11 mb-5 reveal" data-animation="animate__fadeInUp" id="desarrolladores">
+            <div class="project-card-glass overflow-hidden position-relative">
+                <div class="dev-profile-header">
+                    <h3 class="fw-bold text-warning text-uppercase letter-spacing-2 mb-0">{% trans "Talento y Desarrollo" %}</h3>
+                    <p class="small text-white opacity-75 mb-0">{% trans "Unidad Educativa Fiscomisional La Dolorosa" %}</p>
+                </div>
+                
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-8">
+                        <h2 class="display-6 fw-bold mb-4 text-white">{% trans "Somos Jostin Torres, Jair Chávez y Juan Arboleda" %}</h2>
+                        <div style="font-size: 1.15rem; line-height: 1.7; color: #ffffff;">
+                            <p class="mb-4">
+                                {% blocktrans %}Unidad Educativa Fiscomisional La Dolorosa. Como estudiantes, nos complace darles la bienvenida a este espacio digital creado con el firme propósito de rescatar, preservar y difundir el invaluable legado sonoro de nuestra región.{% endblocktrans %}
+                            </p>
+                            <p class="mb-0">
+                                {% blocktrans %}Este proyecto nace de nuestro interés por combinar la educación y la tecnología para aportar a la conservación cultural. Esperamos que este sitio sea una fuente de inspiración y orgullo para todos.{% endblocktrans %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <div class="p-4 rounded-4" style="background: rgba(227, 170, 89, 0.05); border: 1px dashed rgba(227, 170, 89, 0.3);">
+                            <i class="fas fa-laptop-code fa-4x text-warning mb-3"></i>
+                            <h5 class="fw-bold text-white">{% trans "Core Team" %}</h5>
+                            <hr class="border-warning opacity-25">
+                            <ul class="list-unstyled mb-0 text-white">
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> {% trans "Digitalización" %}</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> {% trans "UX/UI Design" %}</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i> {% trans "Gamificación" %}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
         </div>
     </div>
 </div>

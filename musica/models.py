@@ -48,7 +48,8 @@ class Cancion(models.Model):
     descripcion_en = models.TextField(blank=True)
     descripcion_fr = models.TextField(blank=True)
     
-    archivo_audio = models.FileField(upload_to='musica/audios/')
+    archivo_audio = models.FileField(upload_to='musica/audios/', null=True, blank=True)
+    url_youtube = models.URLField(max_length=500, blank=True, null=True, help_text="Link de YouTube para reproducir si no hay archivo físico.")
     fecha_lanzamiento = models.CharField(max_length=100, blank=True, help_text="Época o año relativo.")
 
     def get_translated(self, field_name):

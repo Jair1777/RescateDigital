@@ -3,156 +3,326 @@
 
 {% block title %}{{ artista.nombre }} - {% trans "Rescate Digital" %}{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Premium Artist Profile Styles */
+    .artist-hero {
+        position: relative;
+        padding: 140px 0 100px;
+        background-color: #1a1a1a;
+        overflow: hidden;
+        color: white;
+    }
+
+    .artist-hero-bg {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        {% if artista.imagen_perfil %}
+        background-image: url('{{ artista.imagen_perfil.url }}');
+        {% else %}
+        background-image: linear-gradient(135deg, #013b28 0%, #000 100%);
+        {% endif %}
+        background-size: cover;
+        background-position: center;
+        filter: blur(50px) brightness(0.4);
+        transform: scale(1.1);
+        z-index: 0;
+    }
+
+    .artist-hero-overlay {
+        position: absolute;
+        bottom: 0; left: 0; width: 100%; height: 50%;
+        background: linear-gradient(0deg, #f8f9fa 0%, transparent 100%);
+        z-index: 1;
+        transition: background 1s ease;
+    }
+
+    body.bg-dark .artist-hero-overlay {
+        background: linear-gradient(0deg, #121212 0%, transparent 100%);
+    }
+
+    .artist-hero .container {
+        position: relative;
+        z-index: 2;
+    }
+
+    .artist-main-img {
+        width: 100%;
+        max-width: 450px;
+        height: 600px;
+        object-fit: cover;
+        border-radius: 40px;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .artist-main-img:hover {
+        transform: translateY(-10px) rotate(1deg);
+    }
+
+    .gold-subtitle {
+        color: var(--accent-color);
+        text-transform: uppercase;
+        letter-spacing: 5px;
+        font-weight: 800;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .section-pills {
+        background: white;
+        border-radius: 40px;
+        padding: 4rem;
+        box-shadow: 0 30px 100px rgba(0,0,0,0.08);
+        margin-top: -80px;
+        position: relative;
+        z-index: 10;
+        border: 1px solid rgba(255,255,255,0.8);
+        transition: background 0.8s ease, border-color 0.8s ease;
+    }
+
+    body.bg-dark .section-pills {
+        background: #1a1a1a;
+        border-color: rgba(255,255,255,0.05);
+        box-shadow: 0 30px 100px rgba(0,0,0,0.5);
+    }
+
+    .info-card {
+        border-radius: 25px;
+        padding: 2.5rem;
+        height: 100%;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    body.bg-dark .info-card {
+        background: rgba(255,255,255,0.03) !important;
+        border-color: rgba(255,255,255,0.05) !important;
+        color: white !important;
+    }
+
+    body.bg-dark .info-card .text-dark {
+        color: rgba(255,255,255,0.7) !important;
+    }
+
+    body.bg-dark .text-dark-emphasis {
+        color: rgba(255,255,255,0.85) !important;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    }
+
+    .info-card-green { background: #f0f7f4; border-top: 6px solid var(--primary-color); }
+    .info-card-gold { background: #fffcf5; border-top: 6px solid var(--accent-color); }
+
+    .breadcrumb-item a, .breadcrumb-item.active {
+        color: rgba(255,255,255,0.6) !important;
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+    
+    body.bg-dark .breadcrumb-item.active {
+        color: var(--accent-color) !important;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255,255,255,0.3) !important;
+    }
+
+    .floating-note {
+        position: absolute;
+        opacity: 0.15;
+        animation: float-around 25s infinite linear;
+        color: white;
+        pointer-events: none;
+    }
+
+    @keyframes float-around {
+        0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+        33% { transform: translate(40px, -60px) rotate(15deg) scale(1.1); }
+        66% { transform: translate(-30px, 40px) rotate(-15deg) scale(0.9); }
+        100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    }
+
+    footer.site-footer {
+        display: none !important;
+    }
+
+    .artist-name-glow {
+        text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        line-height: 1;
+        transition: text-shadow 0.5s;
+    }
+
+    body.bg-dark .artist-name-glow {
+        text-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+    }
+
+    .biography-preview {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 2.5rem;
+        border-radius: 30px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-4">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-5">
-        <li class="breadcrumb-item"><a href="{% url 'inicio' %}" class="text-decoration-none text-muted">{% trans "Inicio" %}</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'artistas_lista' %}" class="text-decoration-none fw-bold" style="color: var(--primary-color);">{% trans "Artistas" %}</a></li>
-        <li class="breadcrumb-item active" aria-current="page">{{ artista.translated_nombre }}</li>
-      </ol>
-    </nav>
+<div class="artist-hero">
+    <div class="artist-hero-bg"></div>
+    <div class="artist-hero-overlay"></div>
+    
+    <!-- Floating Decorations -->
+    <i class="fas fa-music floating-note" style="top: 10%; left: 10%; font-size: 5rem;"></i>
+    <i class="fas fa-quaver floating-note" style="bottom: 30%; right: 15%; font-size: 6rem; animation-delay: -5s;"></i>
+    <i class="fas fa-guitar floating-note" style="top: 45%; right: 25%; font-size: 4rem; animation-delay: -12s;"></i>
 
-    <div class="row gx-5 mb-5">
-        <!-- Imagen del artista con Carrusel -->
-        <div class="col-lg-5 mb-4 position-relative">
-            <!-- Floating Notes Decoration -->
-            <div class="position-absolute top-0 start-0 w-100 h-100 pointer-events-none" style="z-index: 10;">
-                <i class="fas fa-music text-gold opacity-25 position-absolute" style="top: 10%; left: 5%; font-size: 1.5rem;"></i>
-                <i class="fas fa-quaver text-dark opacity-25 position-absolute" style="bottom: 15%; right: 10%; font-size: 2rem;"></i>
-            </div>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-5 animate__animated animate__fadeIn">
+            <li class="breadcrumb-item"><a href="{% url 'inicio' %}" class="text-decoration-none">{% trans "Inicio" %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'artistas_lista' %}" class="text-decoration-none">{% trans "Artistas" %}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ artista.translated_nombre }}</li>
+          </ol>
+        </nav>
 
-            <div class="swiper artistGallerySwiper rounded shadow-sm overflow-hidden" style="background-color: #f0f0f0;">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide text-center p-3">
-                        {% if artista.imagen_perfil %}
-                            <img src="{{ artista.imagen_perfil.url }}" class="img-fluid rounded shadow-sm w-100" alt="{{ artista.translated_nombre }}" style="object-fit: contain; max-height: 500px; filter: sepia(30%);">
-                        {% else %}
-                            <div class="d-flex align-items-center justify-content-center rounded shadow-sm" style="height: 500px; background-color: #8c6e53; color: white;">
-                                <i class="fas fa-user-tie fa-10x opacity-50"></i>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <!-- Mock additional slides for 'Gallery' feel -->
-                    <div class="swiper-slide text-center p-3">
-                        <div class="d-flex align-items-center justify-content-center rounded shadow-sm" style="height: 500px; background-color: var(--primary-color); color: white;">
-                            <i class="fas fa-music fa-10x opacity-20"></i>
-                            <div class="position-absolute bottom-0 p-4 w-100 bg-dark bg-opacity-50 text-white">
-                                <p class="small mb-0">{% trans "Legado Musical de Loja" %}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide text-center p-3">
-                        <div class="d-flex align-items-center justify-content-center rounded shadow-sm" style="height: 500px; background-color: var(--accent-color); color: white;">
-                            <i class="fas fa-guitar fa-10x opacity-20"></i>
-                            <div class="position-absolute bottom-0 p-4 w-100 bg-dark bg-opacity-50 text-white">
-                                <p class="small mb-0">{% trans "Instrumentos de la Época" %}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-pagination"></div>
-                <div class="swiper-button-prev" style="color: white; transform: scale(0.6);"></div>
-                <div class="swiper-button-next" style="color: white; transform: scale(0.6);"></div>
-            </div>
-            
-            <div class="mt-3 text-center">
-                <small class="text-muted fst-italic">{% trans "Desliza para ver más imágenes del contexto histórico." %}</small>
-            </div>
-        </div>
-        
-        <!-- Detalles del artista -->
-        <div class="col-lg-7">
-            <span class="badge mb-3" style="background-color: var(--accent-color); color: white; padding: 6px 12px; font-size: 0.75rem; letter-spacing: 1px;">COMPOSITOR DESTACADO</span>
-            <h1 class="display-4 fw-bold mb-3" style="color: var(--primary-color); letter-spacing: -1px;">{{ artista.translated_nombre }}</h1>
-            
-            <div class="d-flex align-items-center mb-4 text-dark fw-bold" style="font-size: 1.1rem;">
-                <i class="far fa-calendar-alt text-success me-2"></i> {{ artista.translated_periodo_vida|default:"?" }} &nbsp;&bull;&nbsp; 
-                <i class="fas fa-map-marker-alt text-success ms-3 me-2"></i> Loja, Ecuador
-            </div>
-            
-            <h4 class="fw-bold mb-3" style="color: var(--secondary-color); border-left: 4px solid var(--accent-color); padding-left: 12px;">{% trans "Biografía" %}</h4>
-                {{ artista.translated_biografia|linebreaks }}
-
-            {% if artista.translated_composiciones_resumen %}
-            <div class="mb-4">
-                <h5 class="fw-bold text-dark"><i class="fas fa-music text-gold me-2"></i>{% trans "Composiciones" %}</h5>
-                <p class="text-muted">{{ artista.translated_composiciones_resumen }}</p>
-            </div>
-            {% endif %}
-
-            {% if artista.obras_destacadas_resumen %}
-            <!-- Obras integradas en composiciones -->
-            {% endif %}
-                    </div>
-    </div>
-
-    <!-- Secciones secundarias: Legado e Hitos -->
-    <div class="row gx-5 mt-4">
-        <div class="col-lg-8">
-            <!-- Legado Cultural / Info Box -->
-            <div class="p-4 rounded text-white shadow-sm" style="background-color: var(--primary-color);">
-                <div class="d-flex align-items-center mb-3 text-gold">
-                    <i class="fas fa-star me-2"></i>
-                    <h5 class="fw-bold mb-0">{% trans "Legado Cultural" %}</h5>
-                </div>
-                <p class="mb-0" style="opacity: 0.9; line-height: 1.7;">
-                    {{ artista.translated_legado_resumen|default:"Su influencia persiste en la educación musical ecuatoriana, honrando su dedicación a la formación de nuevas generaciones." }}
-                </p>
-            </div>
-        </div>
-        
-        <div class="col-lg-4 mt-5 mt-lg-0">
-            <!-- Sidebar GAMIFICATION CTA -->
-            <div class="card border-0 shadow-sm mb-5" style="background-color: #fef8eb;">
-                <div class="card-body p-4 text-center">
-                    <div class="rounded-circle bg-gold text-white d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 50px; height: 50px; background-color: var(--accent-color);">
-                        <i class="fas fa-question"></i>
-                    </div>
-                    <h5 class="fw-bold text-dark mb-3">{% blocktrans with nombre=artista.translated_nombre|truncatewords:2 %}¿Cuánto sabes de {{ nombre }}?{% endblocktrans %}</h5>
-                    <p class="small text-muted mb-4">Pon a prueba tus conocimientos sobre la vida y obra del maestro lojano en este breve desafío interactivo.</p>
-                    {% if quiz %}
-                    <a href="{% url 'jugar_quiz' quiz.id %}" class="btn btn-dark-green w-100">{% trans "Empezar Quiz" %} &nbsp;<i class="fas fa-paper-plane"></i></a>
+        <div class="row align-items-center gx-5">
+            <div class="col-lg-5 mb-5 mb-lg-0 text-center text-lg-start">
+                <div class="position-relative d-inline-block">
+                    {% if artista.imagen_perfil %}
+                        <img src="{{ artista.imagen_perfil.url }}" class="artist-main-img animate__animated animate__fadeInLeft" alt="{{ artista.translated_nombre }}">
                     {% else %}
-                    <a href="{% url 'juegos_lista' %}" class="btn btn-dark-green w-100">{% trans "Ver todos los Juegos" %} &nbsp;<i class="fas fa-paper-plane"></i></a>
+                        <div class="artist-main-img d-flex align-items-center justify-content-center bg-dark animate__animated animate__fadeInLeft">
+                            <i class="fas fa-user-tie fa-10x opacity-25"></i>
+                        </div>
                     {% endif %}
+                    
+                    <!-- Accent Decoration -->
+                    <div class="position-absolute -bottom-4 -right-4 w-100 h-100 border-2 border-warning rounded-4 opacity-25" style="z-index:-1; transform: translate(20px, 20px);"></div>
                 </div>
             </div>
-            
-            <!-- Hitos Linea del tiempo sidebar mode -->
-            <h4 class="fw-bold mb-4" style="color: var(--primary-color);">{% trans "Cronología" %}</h4>
-            {% if artista.hitos.all %}
-                <div class="position-relative ms-2">
-                    <div class="position-absolute h-100 border-start border-2" style="left: 7px; border-color: #e5e7eb !important;"></div>
-                    {% for hito in artista.hitos.all %}
-                    <div class="position-relative ps-4 mb-4">
-                        <div class="position-absolute bg-white border border-2 rounded-circle" style="width: 16px; height: 16px; left: 0; top: 4px; border-color: var(--accent-color) !important;"></div>
-                        <h6 class="fw-bold text-dark mb-1">{{ hito.anio }}</h6>
-                        <p class="small text-muted mb-0">{{ hito.translated_evento }}</p>
-
+            <div class="col-lg-7">
+                <div class="animate__animated animate__fadeInRight" style="animation-delay: 0.2s;">
+                    <span class="gold-subtitle">{% trans "Leyenda de la Música Lojana" %}</span>
+                    <h1 class="display-1 fw-bold mb-4 artist-name-glow">{{ artista.translated_nombre }}</h1>
+                    
+                    <div class="d-flex flex-wrap align-items-center mb-5 fs-4 opacity-75 fw-light">
+                        <span class="me-4"><i class="far fa-calendar-alt me-2 text-warning"></i> {{ artista.translated_periodo_vida|default:"?" }}</span>
+                        <span class="me-4"><i class="fas fa-map-marker-alt me-2 text-warning"></i> Loja, Ecuador</span>
                     </div>
-                    {% endfor %}
+
+                    <div class="biography-preview">
+                        <h4 class="fw-bold mb-3 text-white d-flex align-items-center">
+                            <i class="fas fa-quote-left me-3 text-warning"></i>
+                            {% trans "Esencia del Maestro" %}
+                        </h4>
+                        <p class="mb-0 lead" style="line-height: 1.8; color: rgba(255,255,255,0.95); font-style: italic;">
+                            {{ artista.translated_esencia|linebreaks }}
+                        </p>
+                    </div>
                 </div>
-            {% else %}
-                <p class="text-muted small">{% trans "Sin eventos cronológicos registrados." %}</p>
-            {% endif %}
+            </div>
         </div>
     </div>
 </div>
 
-{% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        if (typeof Swiper !== 'undefined') {
-            new Swiper('.artistGallerySwiper', {
-                slidesPerView: 1,
-                spaceBetween: 10,
-                pagination: { el: '.swiper-pagination', clickable: true },
-                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-            });
-        }
-    });
-</script>
-{% endblock %}
+<div class="container pb-5">
+    <div class="section-pills">
+        <div class="row g-5">
+            <!-- Columna principal con todos los detalles -->
+            <div class="col-lg-8 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+                <div class="mb-5">
+                    <h3 class="fw-bold mb-4 display-6" style="color: var(--primary-color);">
+                        <i class="fas fa-scroll me-3 opacity-50"></i>{% trans "Historia y Trayectoria" %}
+                    </h3>
+                    <div class="fs-5 text-dark-emphasis" style="line-height: 2.1;">
+                        {{ artista.translated_biografia|linebreaks }}
+                    </div>
+                </div>
 
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="info-card info-card-green">
+                            <h4 class="fw-bold mb-4 d-flex align-items-center">
+                                <span class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-music fs-6"></i>
+                                </span>
+                                {% trans "Composiciones" %}
+                            </h4>
+                            <div class="text-dark opacity-75" style="white-space: pre-line; line-height: 1.8;">{{ artista.translated_composiciones_resumen }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-card info-card-gold">
+                            <h4 class="fw-bold mb-4 d-flex align-items-center">
+                                <span class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-award fs-6"></i>
+                                </span>
+                                {% trans "Legado Cultural" %}
+                            </h4>
+                            <div class="text-dark opacity-75" style="white-space: pre-line; line-height: 1.8;">{{ artista.translated_legado_resumen }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna lateral: Cronología y Juegos -->
+            <div class="col-lg-4">
+                <div class="sticky-top" style="top: 2rem; z-index: 1;">
+                    <div class="mb-5 animate__animated animate__fadeInRight" style="animation-delay: 0.6s;">
+                        <h4 class="fw-bold mb-4 d-flex align-items-center" style="color: var(--primary-color);">
+                            <i class="fas fa-history me-3 opacity-50"></i>{% trans "Cronología" %}
+                        </h4>
+                        
+                        {% if artista.obras_destacadas_resumen %}
+                            <div class="p-4 mb-4 rounded-4" style="background-color: #f0f7f4; border-left: 6px solid var(--primary-color); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+                                <div class="fw-bold text-uppercase small text-success mb-2 letter-spacing-1">{% trans "Contexto Histórico" %}</div>
+                                <p class="mb-0 text-dark opacity-75" style="font-size: 0.95rem;">{{ artista.obras_destacadas_resumen }}</p>
+                            </div>
+                        {% endif %}
+
+                        {% if artista.hitos.all %}
+                            <div class="position-relative ms-2">
+                                <div class="position-absolute h-100 border-start border-2" style="left: 7px; border-color: #e5e7eb !important;"></div>
+                                {% for hito in artista.hitos.all %}
+                                <div class="position-relative ps-4 mb-4 timeline-item">
+                                    <div class="position-absolute bg-white border border-2 rounded-circle shadow-sm" style="width: 18px; height: 18px; left: -1px; top: 4px; border-color: var(--accent-color) !important; z-index: 2;"></div>
+                                    <h6 class="fw-bold text-dark mb-1">{{ hito.anio }}</h6>
+                                    <p class="small text-muted mb-0">{{ hito.translated_evento }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Enhanced Game Card -->
+                    <div class="card border-0 overflow-hidden animate__animated animate__fadeInUp" style="background: linear-gradient(135deg, #013b28 0%, #001a11 100%); border-radius: 35px; animation-delay: 0.8s;">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: url('{% static "images/pattern.png" %}');"></div>
+                        <div class="card-body p-5 text-center text-white position-relative">
+                            <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center mx-auto mb-4 shadow-lg" style="width: 70px; height: 70px;">
+                                <i class="fas fa-trophy fa-2x"></i>
+                            </div>
+                            <h3 class="fw-bold mb-3">{% trans "¿Cuánto aprendiste?" %}</h3>
+                            <p class="mb-4 opacity-75">{% blocktrans with nombre=artista.translated_nombre|truncatewords:2 %}Demuestra tu conocimiento sobre {{ nombre }} y sube en el Salón de la Fama.{% endblocktrans %}</p>
+                            {% if quiz %}
+                                <a href="{% url 'jugar_quiz' quiz.id %}" class="btn btn-gold btn-lg w-100 rounded-pill py-3 fw-bold shadow-lg transition-hover">
+                                    {% trans "¡Aceptar el Desafío!" %} <i class="fas fa-chevron-right ms-2"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'juegos_lista' %}" class="btn btn-gold btn-lg w-100 rounded-pill py-3 fw-bold shadow-lg transition-hover">
+                                    {% trans "Explorar Juegos" %}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -43,8 +43,36 @@
         .theater-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.9) 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
             z-index: -1;
+            transition: background 1s ease;
+        }
+
+        body.bg-dark .theater-overlay {
+            background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.95) 100%);
+        }
+
+        /* Card Theme Awareness */
+        .artist-info {
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        body.bg-dark .artist-info {
+            background: #1a1a1a !important;
+            color: white !important;
+        }
+
+        body.bg-dark .artist-name {
+            color: #fff !important;
+        }
+
+        body.bg-dark .artist-quote {
+            color: rgba(255,255,255,0.6) !important;
+        }
+
+        body.bg-dark .artist-card {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5) !important;
+            border: 1px solid rgba(255,255,255,0.05) !important;
         }
 
         /* Hover blur effect for artists */
@@ -76,6 +104,10 @@
         .artist-lead-text {
             color: #f1f5f9 !important;
             text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        footer.site-footer {
+            display: none !important;
         }
     </style>
 {% endblock %}

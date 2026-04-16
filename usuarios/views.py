@@ -48,3 +48,22 @@ def registro_view(request):
             messages.error(request, f'Ocurrió un error al registrar: {str(e)}')
             
     return render(request, 'usuarios/registro.html')
+
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='login')
+def perfil_config(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        foto = request.FILES.get('foto')
+        
+        user = request.user
+        if nombre:
+            user.first_name = nombre
+        if foto:
+            user.foto_perfil = foto
+        user.save()
+        messages.success(request, 'Configuración actualizada correctamente.')
+        return redirect('inicio')
+        
+    return render(request, 'usuarios/perfil_config.html')

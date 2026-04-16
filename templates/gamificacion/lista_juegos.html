@@ -8,18 +8,26 @@
     .games-path-container {
         position: relative;
         padding: 100px 0;
-        /* Deep Nebula Space Gradient */
-        background: radial-gradient(circle at 50% 0%, #1e3c72 0%, #0a1128 30%, #050814 60%, #000000 100%);
+        /* Day Sky Gradient for Light Mode */
+        background: radial-gradient(circle at 50% 0%, #e0f7fa 0%, #80deea 30%, #4dd0e1 60%, #26c6da 100%);
         background-attachment: fixed;
         border-radius: 60px;
         overflow: hidden;
         min-height: 2800px;
         margin-top: 2rem;
+        border: 4px solid #80deea;
+        box-shadow: 0 0 50px rgba(0, 188, 212, 0.3), inset 0 0 100px rgba(255,255,255,0.5);
+        transition: all 0.5s ease;
+    }
+    
+    /* Dark Mode Space Path */
+    body.bg-dark .games-path-container {
+        background: radial-gradient(circle at 50% 0%, #1e3c72 0%, #0a1128 30%, #050814 60%, #000000 100%);
         border: 4px solid #1e3c72;
         box-shadow: 0 0 80px rgba(30, 60, 114, 0.8), inset 0 0 100px rgba(0,0,0,0.8);
     }
-    
-    /* SHOOTING STARS */
+
+    /* SHOOTING STARS - Hidden in light mode, visible in dark */
     .shooting-star {
         position: absolute;
         width: 150px;
@@ -28,44 +36,38 @@
         z-index: 2;
         animation: shoot 5s infinite linear;
         opacity: 0;
+        display: none;
     }
+    body.bg-dark .shooting-star { display: block; }
+    
     @keyframes shoot {
         0% { transform: translate(-200px, 0) rotate(20deg); opacity: 1; }
         100% { transform: translate(110vw, 400px) rotate(20deg); opacity: 0; }
     }
 
-    /* Vibrant Multi-colored Stars */
+    /* Vibrant Multi-colored Stars - twinkle blue/purple in light, yellow in dark */
     .vibrant-star {
         position: absolute;
         animation: twinkle-colored 3s infinite ease-in-out;
         z-index: 2;
+        color: #00bcd4;
     }
+    body.bg-dark .vibrant-star { color: #fff; }
+    
     @keyframes twinkle-colored {
         0%, 100% { transform: scale(1); opacity: 0.4; }
-        50% { transform: scale(1.5); opacity: 1; color: #ffeb3b; filter: drop-shadow(0 0 10px #ffeb3b); }
+        50% { transform: scale(1.5); opacity: 1; filter: drop-shadow(0 0 10px currentColor); }
     }
 
-    /* Aura for Planets */
-    .planet-aura {
-        position: absolute;
-        border-radius: 50%;
-        z-index: 1;
-        filter: blur(20px);
-        opacity: 0.3;
-        animation: aura-pulse 6s infinite ease-in-out;
-    }
-    @keyframes aura-pulse {
-        0%, 100% { transform: scale(1); opacity: 0.2; }
-        50% { transform: scale(1.3); opacity: 0.4; }
-    }
-
-    /* Astronauts & Space Music Notes */
-    .astronaut-decor { position: absolute; z-index: 4; font-size: 5rem; color: #e2e8f0; animation: float-space 20s infinite ease-in-out; filter: drop-shadow(0 0 20px rgba(255,255,255,0.5)); }
-    .music-note-decor { position: absolute; z-index: 3; font-size: 3rem; animation: float-music 15s infinite linear; opacity: 0.6; }
+    /* Astronauts & Decorations handling */
+    .astronaut-decor { position: absolute; z-index: 4; font-size: 5rem; color: #1e3c72; animation: float-space 20s infinite ease-in-out; filter: drop-shadow(0 0 10px rgba(0,0,0,0.1)); }
+    body.bg-dark .astronaut-decor { color: #e2e8f0; filter: drop-shadow(0 0 20px rgba(255,255,255,0.5)); }
+    
+    .music-note-decor { position: absolute; z-index: 3; font-size: 3rem; animation: float-music 15s infinite linear; opacity: 0.8; }
     
     .note-magenta { color: #ff00ff; filter: drop-shadow(0 0 15px #ff00ff); }
-    .note-cyan { color: #00ffff; filter: drop-shadow(0 0 15px #00ffff); }
-    .note-gold { color: #ffd700; filter: drop-shadow(0 0 15px #ffd700); }
+    .note-cyan { color: #00bcd4; filter: drop-shadow(0 0 15px #00bcd4); }
+    .note-gold { color: #ff9800; filter: drop-shadow(0 0 15px #ff9800); }
 
     @keyframes float-space {
         0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
@@ -80,29 +82,7 @@
         100% { transform: translateY(-500px) rotate(360deg) translateX(100px); opacity: 0; }
     }
 
-    /* Locked & Interaction Styles */
-    .locked-node { cursor: not-allowed; position: relative; }
-    .grayscale-filter { filter: grayscale(0.9) blur(1px) opacity(0.8); }
-    .locked-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.1);
-        z-index: 2;
-        pointer-events: none;
-    }
-    
-    .quiz-node:not(.locked-node):hover .card {
-        transform: scale(1.08) translateY(-15px);
-        box-shadow: 0 40px 80px rgba(0,0,0,0.5) !important;
-        border: 2px solid var(--accent-color) !important;
-    }
-    
-    .cursor-not-allowed { cursor: not-allowed; }
-
-    /* Road (Space Path) */
+    /* Road (Space Path) color toggle */
     .games-path-container::before { 
         content: ""; 
         position: absolute; 
@@ -110,13 +90,17 @@
         bottom: 0; 
         left: 50%; 
         width: 15px; 
-        background: linear-gradient(180deg, rgba(227, 170, 89, 0) 0%, rgba(227, 170, 89, 0.8) 10%, rgba(0, 255, 255, 0.8) 50%, rgba(255, 0, 255, 0.8) 90%, rgba(255, 0, 255, 0) 100%);
+        background: linear-gradient(180deg, rgba(227, 170, 89, 0) 0%, rgba(0, 188, 212, 0.8) 10%, rgba(3, 169, 244, 0.8) 50%, rgba(0, 150, 136, 0.8) 90%, transparent 100%);
         transform: translateX(-50%); 
         z-index: 1; 
         opacity: 0.6; 
         border-radius: 20px;
-        box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+        box-shadow: 0 0 20px rgba(0, 188, 212, 0.4);
         animation: path-glow 4s infinite alternate;
+    }
+    body.bg-dark .games-path-container::before {
+        background: linear-gradient(180deg, rgba(227, 170, 89, 0) 0%, rgba(227, 170, 89, 0.8) 10%, rgba(0, 255, 255, 0.8) 50%, rgba(255, 0, 255, 0.8) 90%, rgba(255, 0, 255, 0) 100%);
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
     }
 
     @keyframes path-glow {
@@ -124,29 +108,18 @@
         to { opacity: 0.8; filter: blur(3px); }
     }
 
-    /* NEBULA CLOUDS */
+    /* NEBULA CLOUDS - Change colors in light mode */
     .nebula-cloud {
         position: absolute;
         border-radius: 50%;
         filter: blur(80px);
-        opacity: 0.3;
+        opacity: 0.2;
         z-index: 0;
         animation: nebula-pulse 10s infinite alternate;
     }
     @keyframes nebula-pulse {
         from { transform: scale(1) rotate(0deg); opacity: 0.2; }
-        to { transform: scale(1.5) rotate(20deg); opacity: 0.5; }
-    }
-    .gaming-title-text {
-        font-family: 'Press Start 2P', system-ui, -apple-system, sans-serif;
-        background: linear-gradient(to right, #f83600 0%, #f9d423 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 10px rgba(248, 54, 0, 0.5);
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        font-weight: 900;
+        to { transform: scale(1.5) rotate(20deg); opacity: 0.4; }
     }
     
     .bg-music-notes {
@@ -155,8 +128,40 @@
         overflow: hidden;
         z-index: -1;
         pointer-events: none;
-        background-color: #f8f9fa; /* keep it light as asked but filled with notes */
+        background-color: #f8f9fa;
+        transition: background-color 0.5s ease;
     }
+    body.bg-dark .bg-music-notes {
+        background-color: #0a0e1a;
+    }
+    
+    .bg-music-notes .note {
+        position: absolute;
+        font-size: 3rem;
+        opacity: 0.15;
+        color: var(--primary-color);
+        animation: float-up-bg 15s linear infinite;
+        bottom: -10%;
+    }
+    body.bg-dark .bg-music-notes .note { color: #fff; opacity: 0.1; }
+
+    /* Card styling in dark mode */
+    body.bg-dark .quiz-node .card {
+        background-color: #1a2236 !important;
+        border: 1px solid #2d3748 !important;
+    }
+    body.bg-dark .quiz-node .card-body {
+        background-color: #1a2236 !important;
+        color: #e2e8f0 !important;
+    }
+    body.bg-dark .quiz-node .card-body p {
+        color: #a0aec0 !important;
+    }
+    body.bg-dark .quiz-node .btn-dark-green {
+        background-color: #2f855a;
+        color: white;
+    }
+
     
     .bg-music-notes .note {
         position: absolute;
@@ -172,6 +177,10 @@
         10% { opacity: 0.15; }
         90% { opacity: 0.15; }
         100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+    }
+
+    footer.site-footer {
+        display: none !important;
     }
 </style>
 {% endblock %}

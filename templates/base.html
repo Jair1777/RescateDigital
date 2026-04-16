@@ -84,15 +84,11 @@
                 <ul class="navbar-nav w-100">
                     <li class="nav-item"><a class="nav-link side-link" href="{% url 'inicio' %}"><div class="nav-icon"><i class="fas fa-home"></i></div><span class="nav-text">{% trans "Inicio" %}</span></a></li>
                     
-                    <li class="nav-item dropdown">
-                        <a class="nav-link side-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <li class="nav-item">
+                        <a class="nav-link side-link" href="{% url 'proyecto' %}">
                             <div class="nav-icon"><i class="fas fa-info-circle"></i></div> 
                             <span class="nav-text">{% trans "Proyecto" %}</span>
                         </a>
-                        <ul class="dropdown-menu shadow border-0" style="border-radius: 12px; z-index:1060; min-width: 200px;">
-                            <li><a class="dropdown-item" href="{% url 'proyecto' %}#acerca"><i class="fas fa-book-open me-2 text-info"></i> {% trans "Acerca de la página" %}</a></li>
-                            <li><a class="dropdown-item" href="{% url 'proyecto' %}#desarrolladores"><i class="fas fa-users me-2 text-success"></i> {% trans "Desarrolladores Web" %}</a></li>
-                        </ul>
                     </li>
                     <li class="nav-item"><a class="nav-link side-link" href="{% url 'historia' %}"><div class="nav-icon"><i class="fas fa-book"></i></div><span class="nav-text">{% trans "Historia musical" %}</span></a></li>
                     <li class="nav-item"><a class="nav-link side-link" href="{% url 'artistas_lista' %}"><div class="nav-icon"><i class="fas fa-users"></i></div><span class="nav-text">{% trans "Artistas" %}</span></a></li>
@@ -124,76 +120,7 @@
                     </form>
                 </li>
                 
-                <!-- Authentication status -->
-                {% if user.is_authenticated %}
-                    <!-- Notifications Dropdown -->
-                    <li class="nav-item dropdown w-100 mb-2">
-                        <a href="#" class="nav-link side-link dropdown-toggle text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="nav-icon position-relative">
-                                <i class="fas fa-bell"></i>
-                                <span class="notification-badge shadow-sm" style="top:-3px; right:-5px; font-size: 0.55rem; padding: 2px 4px; line-height:1;">2</span>
-                            </div>
-                            <span class="nav-text fw-bold">{% trans "Notificaciones" %}</span>
-                        </a>
-                        <ul class="dropdown-menu shadow border-0" style="border-radius: 12px; z-index:1060; min-width: 220px;">
-                            <li class="px-3 py-2 text-center border-bottom mb-2">
-                                <div class="fw-bold text-dark">{% trans "Notificaciones" %}</div>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <i class="fas fa-sync text-success me-2"></i>
-                                    <span>{% trans "Actualización" %}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="{% url 'juegos_lista' %}">
-                                    <i class="fas fa-gamepad text-primary me-2"></i>
-                                    <span>{% trans "Nuevo Quiz" %}</span>
-                                </a>
-                            </li>
-                            <li class="border-top mt-2">
-                                <a class="dropdown-item text-center text-success" href="#">
-                                    <span class="small fw-bold">{% trans "Ver todas" %}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <!-- Profile Dropdown -->
-                    <li class="nav-item dropdown w-100">
-                        <a href="#" class="nav-link side-link dropdown-toggle text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="nav-icon"><i class="fas fa-user-circle"></i></div>
-                            <span class="nav-text fw-bold">{% trans "Perfil" %}</span>
-                        </a>
-                        <ul class="dropdown-menu shadow border-0" style="border-radius: 12px; z-index:1060; min-width: 200px;">
-                            <li class="px-3 py-2 text-center border-bottom mb-2">
-                                <div class="fw-bold text-dark text-truncate mx-auto" style="max-width: 180px;">{{ user.username }}</div>
-                                <div class="small text-muted text-truncate mx-auto" style="max-width: 180px;">{{ user.email }}</div>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center px-3 gap-2" href="{% url 'ranking' %}">
-                                    <i class="fas fa-medal text-warning" style="width: 16px; text-align:center;"></i>
-                                    <span>{% trans "Mi Ranking" %}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center px-3 gap-2" href="#">
-                                    <i class="fas fa-cog text-muted" style="width: 16px; text-align:center;"></i>
-                                    <span>{% trans "Configuración" %}</span>
-                                </a>
-                            </li>
-                            <li class="border-top mt-2">
-                                <form method="post" action="{% url 'logout' %}" class="m-0 p-0">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item text-danger d-flex align-items-center px-3 gap-2 w-100 text-start border-0">
-                                        <i class="fas fa-sign-out-alt" style="width: 16px; text-align:center;"></i>
-                                        <span>{% trans "Cerrar Sesión" %}</span>
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                {% else %}
+                {% if not user.is_authenticated %}
                 <li class="nav-item w-100">
                         <a href="{% url 'login' %}" class="nav-link side-link w-100 text-dark">
                             <div class="nav-icon"><i class="fas fa-sign-in-alt"></i></div>
@@ -201,11 +128,12 @@
                         </a>
                     </li>
                 {% endif %}
+
             </ul>
         </div>
     </nav>
 
-    <div class="main-wrapper flex-grow-1 d-flex flex-column w-100" style="overflow-x: hidden; position: relative;">
+    <div class="main-wrapper flex-grow-1 d-flex flex-column" style="overflow-x: hidden; position: relative;">
         <main class="flex-grow-1">
             {% block content %}{% endblock %}
         </main>
