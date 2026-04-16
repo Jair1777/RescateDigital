@@ -218,7 +218,10 @@ def build_po(lang_code, lang_name, trans_dict):
         'Language': lang_code
     }
     
+    missing_count = 0
     for string in strings:
+        if string not in trans_dict:
+            missing_count += 1
         entry = polib.POEntry(
             msgid=string,
             msgstr=trans_dict.get(string, string)
@@ -228,6 +231,7 @@ def build_po(lang_code, lang_name, trans_dict):
     os.makedirs(f'locale/{lang_code}/LC_MESSAGES', exist_ok=True)
     po.save(f'locale/{lang_code}/LC_MESSAGES/django.po')
     po.save_as_mofile(f'locale/{lang_code}/LC_MESSAGES/django.mo')
+    print(f"Missing translations for {lang_code}: {missing_count}")
 
 build_po('en', 'English', translations_en)
 print("Translations built successfully!")
