@@ -17,11 +17,6 @@
     .artist-hero-bg {
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
-        {% if artista.imagen_perfil %}
-        background-image: url('{{ artista.imagen_perfil.url }}');
-        {% else %}
-        background-image: linear-gradient(135deg, #013b28 0%, #000 100%);
-        {% endif %}
         background-size: cover;
         background-position: center;
         filter: blur(50px) brightness(0.4);
@@ -174,7 +169,7 @@
 
 {% block content %}
 <div class="artist-hero">
-    <div class="artist-hero-bg"></div>
+    <div class="artist-hero-bg" {% if artista.imagen_perfil %}style="background-image: url('{{ artista.imagen_perfil.url }}');"{% else %}style="background-image: linear-gradient(135deg, #013b28 0%, #000 100%);"{% endif %}></div>
     <div class="artist-hero-overlay"></div>
     
     <!-- Floating Decorations -->
@@ -282,7 +277,7 @@
                         {% if artista.obras_destacadas_resumen %}
                             <div class="p-4 mb-4 rounded-4" style="background-color: #f0f7f4; border-left: 6px solid var(--primary-color); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
                                 <div class="fw-bold text-uppercase small text-success mb-2 letter-spacing-1">{% trans "Contexto Histórico" %}</div>
-                                <p class="mb-0 text-dark opacity-75" style="font-size: 0.95rem;">{{ artista.obras_destacadas_resumen }}</p>
+                                <p class="mb-0" style="color: #000 !important; font-size: 0.95rem;">{{ artista.obras_destacadas_resumen }}</p>
                             </div>
                         {% endif %}
 
@@ -302,7 +297,7 @@
 
                     <!-- Enhanced Game Card -->
                     <div class="card border-0 overflow-hidden animate__animated animate__fadeInUp" style="background: linear-gradient(135deg, #013b28 0%, #001a11 100%); border-radius: 35px; animation-delay: 0.8s;">
-                        <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: url('{% static "images/pattern.png" %}');"></div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: url('{% static 'images/pattern.png' %}');"></div>
                         <div class="card-body p-5 text-center text-white position-relative">
                             <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center mx-auto mb-4 shadow-lg" style="width: 70px; height: 70px;">
                                 <i class="fas fa-trophy fa-2x"></i>
