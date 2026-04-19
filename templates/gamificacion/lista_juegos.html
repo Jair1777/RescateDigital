@@ -211,10 +211,48 @@
         <div class="vibrant-star" style="top: 3%; left: 10%; font-size: 0.5rem;"><i class="fas fa-star"></i></div>
         <div class="vibrant-star" style="top: 12%; right: 15%; font-size: 0.8rem; animation-delay: 1s;"><i class="fas fa-star"></i></div>
         <div class="vibrant-star" style="top: 25%; left: 35%; font-size: 0.6rem; animation-delay: 0.5s;"><i class="fas fa-star text-info"></i></div>
-        <div class="vibrant-star" style="top: 18%; right: 45%; font-size: 0.4rem; animation-delay: 2s;"><i class="fas fa-star text-white"></i></div>
         <div class="vibrant-star" style="top: 7%; left: 80%; font-size: 0.7rem; animation-delay: 1.5s;"><i class="fas fa-star text-gold"></i></div>
 
-        <!-- Planet Auras & Figures (REMOVED) -->
+        <!-- NEW GAMIFICATION CHOICE HEADER -->
+        <div class="container text-center pt-5 pb-2 position-relative" style="z-index:10;">
+            <h2 class="display-5 fw-bold text-white mb-4" style="text-shadow: 0 0 15px rgba(0,255,255,0.7);">{% trans "ELIGE TU DESAFÍO" %}</h2>
+            <div class="row justify-content-center">
+                <!-- THE BOSS BATTLE CARD INJECTION -->
+                <div class="col-md-6 col-lg-5 mb-5">
+                    <div class="card bg-dark border border-warning border-3 shadow-lg rounded-4 overflow-hidden" style="transition: transform 0.3s; transform: scale(1.05);">
+                        <div class="card-body text-center p-5 position-relative">
+                            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: radial-gradient(circle, rgba(255,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%); z-index: 0;"></div>
+                            <i class="fas fa-skull text-danger fa-4x mb-3 position-relative" style="z-index: 1;"></i>
+                            <h3 class="text-warning fw-bold position-relative" style="z-index: 1;">{% trans "DESAFIAR AL LÍDER" %}</h3>
+                            <p class="text-white opacity-75 mb-4 position-relative" style="z-index: 1;">
+                                {% trans "Enfrenta al usuario con mayor puntaje en nuestro modo táctico estilo retro. Sobrevive o perece." %}
+                            </p>
+                            <a href="{% url 'desafio_velocidad' %}" class="btn btn-outline-warning btn-lg rounded-pill fw-bold w-100 position-relative shadow" style="z-index: 1;">
+                                <i class="fas fa-gamepad me-2"></i> {% trans "Ir al Combate" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THE GLOBAL RANKING CARD INJECTION -->
+                <div class="col-md-6 col-lg-5 mb-5 mt-4 mt-md-0">
+                    <div class="card bg-dark border border-info border-3 shadow-lg rounded-4 overflow-hidden h-100" style="transition: transform 0.3s; transform: scale(1.02);">
+                        <div class="card-body text-center p-5 position-relative d-flex flex-column justify-content-center">
+                            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: radial-gradient(circle, rgba(0,255,255,0.1) 0%, rgba(0,0,0,0.8) 100%); z-index: 0;"></div>
+                            <i class="fas fa-trophy text-info fa-4x mb-3 position-relative" style="z-index: 1;"></i>
+                            <h3 class="text-info fw-bold position-relative" style="z-index: 1;">{% trans "VER RANKING GLOBAL" %}</h3>
+                            <p class="text-white opacity-75 mb-4 position-relative" style="z-index: 1;">
+                                {% trans "Compara tu puntuación con los mejores jugadores. Escala hasta la cima y conviértete en el Líder indiscutible." %}
+                            </p>
+                            <a href="{% url 'ranking' %}" class="btn btn-outline-info btn-lg rounded-pill fw-bold w-100 position-relative shadow mt-auto" style="z-index: 1;">
+                                <i class="fas fa-list-ol me-2"></i> {% trans "Ver Clasificación" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h3 class="text-white opacity-50 fw-bold mb-5 mt-4">{% trans "- O CONTINÚA TU CAMINO MUSICAL -" %}</h3>
+        </div>
 
         <!-- BACKGROUND NEBULAS -->
         <div class="nebula-cloud" style="top: 10%; left: 10%; width: 500px; height: 500px; background: #8a2be2;"></div>
@@ -310,9 +348,7 @@
 
     
     <div class="mt-5 text-center">
-        <a href="{% url 'ranking' %}" class="btn btn-gold btn-lg rounded-pill px-5 shadow-sm fw-bold">
-            <i class="fas fa-trophy me-2"></i> {% trans "Ver Ranking Global" %}
-        </a>
+        <!-- Spacer for footer aesthetics -->
     </div>
 </div>
 {% endblock %}

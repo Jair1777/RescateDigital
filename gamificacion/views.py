@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Quiz, Opcion, ResultadoQuiz
-from usuarios.models import Usuario
+from .models import Quiz, Opcion, ResultadoQuiz, Cromo
+from usuarios.models import Usuario, Notificacion
 
 def lista_juegos(request):
     quizzes = Quiz.objects.all().order_by('id')
@@ -71,12 +71,38 @@ def jugar_quiz(request, quiz_id):
             puntos=puntos_ganados
         )
         
+        puntos_antes = request.user.puntos_acumulados
+        
         # Update user points
         request.user.puntos_acumulados += puntos_ganados
         request.user.save()
         
+        puntos_despues = request.user.puntos_acumulados
+        
+        # Detect if any cromo was unlocked in this session
+        nuevos_cromos = Cromo.objects.filter(puntos_requeridos__gt=puntos_antes, puntos_requeridos__lte=puntos_despues)
+        
         incorrectas = total_preguntas - correctas
-        messages.success(request, f'¡Reto completado! ✅ Acertaste {correctas} y ❌ Fallaste {incorrectas}. Sumaste {puntos_ganados} puntos.')
+        base_msg = f'¡Reto completado! ✅ Acertaste {correctas} y ❌ Fallaste {incorrectas}. Sumaste {puntos_ganados} puntos.'
+        
+        # Create general notification for quiz completion
+        Notificacion.objects.create(
+            usuario=request.user,
+            mensaje=f'Completaste el reto "{quiz.titulo}" ganando {puntos_ganados} pts.',
+            icono='fas fa-gamepad text-success'
+        )
+
+        if nuevos_cromos.exists():
+            nombres = ", ".join([c.nombre for c in nuevos_cromos])
+            base_msg += f' 🌟 ¡Felicidades! Has desbloqueado nuevos cromos para tu colección: {nombres}. ¡Revisa tu Álbum!'
+            # Create specific notification for unlocked cromos
+            Notificacion.objects.create(
+                usuario=request.user,
+                mensaje=f'¡Desbloqueaste nuevos cromos! Revisa tu Álbum para ver tus recompensas.',
+                icono='fas fa-book-open text-warning'
+            )
+            
+        messages.success(request, base_msg)
         return redirect('juegos_lista')
         
     return render(request, 'gamificacion/jugar_quiz.html', {'quiz': quiz, 'preguntas': preguntas})
@@ -90,7 +116,34 @@ def desafio_velocidad(request):
         if puntos > 0:
             request.user.puntos_acumulados += puntos
             request.user.save()
-            messages.success(request, f'¡Desafío superado! Ganaste {puntos} puntos por tu velocidad.')
+            
+            # Create Notification when points won in battle
+            Notificacion.objects.create(
+                usuario=request.user,
+                mensaje=f'Sobreviviste al combate y ganaste {puntos} pts de Fama.',
+                icono='fas fa-skull text-danger'
+            )
+            
+            messages.success(request, f'¡Desafío superado! Ganaste {puntos} puntos por tu destreza.')
         return redirect('ranking')
         
-    return render(request, 'gamificacion/desafio_velocidad.html', {'top_user': top_user})
+    mode = request.GET.get('mode')
+    if mode == 'synthwave':
+        return render(request, 'gamificacion/desafio_synthwave.html', {'top_user': top_user})
+    elif mode == 'undertale':
+        return render(request, 'gamificacion/desafio_undertale.html', {'top_user': top_user})
+    else:
+        return render(request, 'gamificacion/desafio_seleccion.html', {'top_user': top_user})
+
+@login_required(login_url='login')
+def album_cromos(request):
+    cromos = Cromo.objects.all().order_by('puntos_requeridos')
+    user_points = request.user.puntos_acumulados
+    
+    for c in cromos:
+        c.desbloqueado = (user_points >= c.puntos_requeridos)
+        
+    return render(request, 'gamificacion/album.html', {
+        'cromos': cromos,
+        'user_points': user_points
+    })

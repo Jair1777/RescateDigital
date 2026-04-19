@@ -97,21 +97,54 @@
 <div class="user-controls-top animate__animated animate__fadeIn">
     <!-- Notifications -->
     <div class="dropdown">
-        <a href="#" class="control-btn position-relative" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <a href="#" class="control-btn position-relative" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" onclick="markNotificationsRead()">
             <i class="fas fa-bell"></i>
-            <span class="notification-dot"></span>
+            {% if has_unread %}
+                <span class="notification-dot" id="notifDot"></span>
+            {% endif %}
         </a>
         <ul class="dropdown-menu dropdown-menu-end floating-dropdown-menu" aria-labelledby="notifDropdown">
             <li class="px-3 py-2 text-center border-bottom mb-2">
                 <span class="fw-bold">{% trans "Notificaciones" %}</span>
             </li>
-            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#"><i class="fas fa-circle text-success small"></i> {% trans "Nueva actualización disponible" %}</a></li>
-            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#"><i class="fas fa-circle text-primary small"></i> {% trans "Nuevo quiz de Artistas" %}</a></li>
-            <li class="border-top mt-2 text-center">
-                <a href="#" class="dropdown-item text-primary fw-bold small">{% trans "Ver todas" %}</a>
+            
+            {% for notif in notificaciones %}
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-3 py-2 border-bottom" href="#" style="white-space: normal;">
+                        <i class="{{ notif.icono }} fa-lg"></i> 
+                        <span class="small">{{ notif.mensaje }}</span>
+                    </a>
+                </li>
+            {% empty %}
+                <li>
+                    <span class="dropdown-item text-center text-muted small py-3">No hay notificaciones recientes.</span>
+                </li>
+            {% endfor %}
+            <li class="mt-2 text-center">
+                <span class="text-secondary small">Últimas actividades en el sistema</span>
             </li>
         </ul>
     </div>
+    
+    <script>
+        function markNotificationsRead() {
+            const dot = document.getElementById('notifDot');
+            if (dot) {
+                // Fetch request to mark as read
+                fetch("{% url 'marcar_notificaciones_leidas' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        dot.style.display = 'none'; // hide dot
+                    }
+                });
+            }
+        }
+    </script>
 
     <!-- Profile -->
     <div class="dropdown">
@@ -150,10 +183,10 @@
 <header class="hero-section text-center position-relative overflow-hidden">
     <!-- Dynamic Slideshow Background -->
     <div class="hero-slideshow">
-        <div class="hero-slide active" style="background-image: url('{% static "images/landscape_1.png" %}');"></div>
-        <div class="hero-slide" style="background-image: url('{% static "images/landscape_2.png" %}');"></div>
-        <div class="hero-slide" style="background-image: url('{% static "images/panorama_loja_day.png" %}');"></div>
-        <div class="hero-slide" style="background-image: url('{% static "images/hero_music.jpg" %}');"></div>
+        <div class="hero-slide active" style="background-image: url('/static/images/landscape_1.png');"></div>
+        <div class="hero-slide" style="background-image: url('/static/images/landscape_2.png');"></div>
+        <div class="hero-slide" style="background-image: url('/static/images/panorama_loja_day.png');"></div>
+        <div class="hero-slide" style="background-image: url('/static/images/hero_music.jpg');"></div>
     </div>
 
     <div class="hero-overlay"></div>

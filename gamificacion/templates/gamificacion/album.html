@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block extra_css %}
+<style>
+    .album-header {
+        background: linear-gradient(135deg, rgba(227, 170, 89, 0.15) 0%, rgba(10,10,13,0.8) 100%);
+        border-radius: 20px;
+        border: 1px solid rgba(227, 170, 89, 0.4);
+        padding: 4rem 3rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    .album-header::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: url('https://www.transparenttextures.com/patterns/stardust.png');
+        opacity: 0.3; pointer-events: none;
+    }
+
+    .cromo-card {
+        aspect-ratio: 2/3;
+        perspective: 2000px; /* Stronger 3D perspective */
+        cursor: pointer;
+        margin-bottom: 2.5rem;
+        transition: filter 0.3s ease;
+    }
+
+    .cromo-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform-style: preserve-3d;
+    }
+
+    /* Double click or click to flip later, but CSS hover is ok for unlocked */
+    .cromo-card:hover .cromo-inner.unlocked {
+        transform: rotateY(180deg) scale(1.02); /* TiltJS handles scale, so minimal scale here to avoid jumping */
+        box-shadow: 0 0 30px var(--cromo-color, #e3aa59);
+        border-radius: 15px;
+    }
+
+    .cromo-front, .cromo-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+
+    /* Unlocked Front */
+    .cromo-front.unlocked {
+        background: linear-gradient(145deg, #1a1a24, #121217);
+        border: 2px solid var(--cromo-color, #e3aa59); /* Solid neon border */
+        overflow: hidden;
+    }
+
+    /* Holographic linear glare */
+    .cromo-front.unlocked::before {
+        content: '';
+        position: absolute;
+        top: -150%; left: -150%;
+        width: 300%; height: 300%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05) 45%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.05) 55%, transparent);
+        transform: rotate(45deg);
+        animation: shine 6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+    }
+
+    @keyframes shine {
+        0% { transform: translateY(-50%) translateX(-50%) rotate(45deg); }
+        100% { transform: translateY(50%) translateX(50%) rotate(45deg); }
+    }
+
+    /* Locked Front: Obsidian Rock Look */
+    .cromo-front.locked {
+        background: linear-gradient(135deg, #0d0d12, #14141a);
+        border: 2px solid #282833;
+        box-shadow: inset 0 20px 40px rgba(0,0,0,0.9), 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    .cromo-back {
+        background: rgba(20, 20, 25, 0.95);
+        backdrop-filter: blur(10px);
+        transform: rotateY(180deg);
+        border: 2px solid var(--cromo-color, #e3aa59);
+        color: #fff;
+        text-align: left;
+    }
+
+    .cromo-icon {
+        font-size: 4.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--cromo-color, #e3aa59);
+        filter: drop-shadow(0 0 10px var(--cromo-color));
+    }
+
+    .locked .cromo-icon {
+        color: rgba(255,255,255,0.05);
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    }
+
+    .cromo-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+    }
+
+    .rareza-badge {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-weight: bold;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    footer.site-footer {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="album-header mb-5 reveal">
+        <div class="row align-items-center">
+            <div class="col-md-7 position-relative z-2">
+                <span class="badge bg-warning text-dark px-3 py-2 text-uppercase mb-3 fw-bold letter-spacing-1">{% trans "Gamificación" %}</span>
+                <h1 class="display-3 fw-bold text-white mb-3" style="text-shadow: 0 5px 15px rgba(0,0,0,0.5);">{% trans "Álbum de Colección" %}</h1>
+                <p class="lead text-white opacity-75 mb-0">{% trans "Descubre las figuras y elementos legendarios que cimentaron la vida musical del sur. A medida que juegues y ganes puntos, despertarás estos cromos para siempre." %}</p>
+            </div>
+            <div class="col-md-5 text-center position-relative z-2 mt-4 mt-md-0 border-start border-warning border-opacity-25">
+                <i class="fas fa-gem fa-4x text-warning mb-3" style="filter: drop-shadow(0 0 20px rgba(227, 170, 89, 0.5));"></i>
+                <h4 class="text-white text-uppercase letter-spacing-1 h5">{% trans "Puntos Acumulados" %}</h4>
+                <div class="display-4 fw-bold text-warning">{{ user_points }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cromos Grid -->
+    <div class="row g-5">
+        {% for cromo in cromos %}
+        <div class="col-xl-3 col-lg-4 col-sm-6 reveal" data-animation="animate__fadeInUp" style="animation-delay: {{ forloop.counter0 }}00ms;">
+            <div class="cromo-card" style="--cromo-color: {{ cromo.color_borde }};" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
+                <div class="cromo-inner {% if cromo.desbloqueado %}unlocked{% else %}locked{% endif %}">
+                    
+                    <!-- Front face -->
+                    <div class="cromo-front {% if cromo.desbloqueado %}unlocked{% else %}locked{% endif %}">
+                        {% if cromo.desbloqueado %}
+                            <i class="{{ cromo.icono }} cromo-icon"></i>
+                            <h3 class="cromo-title text-white">{{ cromo.translated_nombre }}</h3>
+                            <span class="rareza-badge mt-2" style="color: {{ cromo.color_borde }}; border-color: {{ cromo.color_borde }};">{{ cromo.rareza }}</span>
+                        {% else %}
+                            <i class="fas fa-lock cromo-icon"></i>
+                            <h3 class="cromo-title text-muted opacity-50">{% trans "Cromo Oculto" %}</h3>
+                            <p class="small text-muted mt-3 mb-0 fw-bold letter-spacing-1">{% trans "REQUIERE" %} {{ cromo.puntos_requeridos }} PTS</p>
+                            <div class="progress mt-3 w-100 bg-dark border border-secondary" style="height: 6px; border-radius: 10px;">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: {% widthratio user_points cromo.puntos_requeridos 100 %}%;"></div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Back face (only shown if unlocked via hover) -->
+                    {% if cromo.desbloqueado %}
+                    <div class="cromo-back">
+                        <h5 class="border-bottom pb-3 mb-3 fw-bold" style="color: {{ cromo.color_borde }}; border-color: {{ cromo.color_borde }} !important;">{{ cromo.translated_nombre }}</h5>
+                        <p class="small text-white opacity-75" style="line-height: 1.8; font-size: 0.95rem;">{{ cromo.translated_descripcion }}</p>
+                        {% if cromo.artista %}
+                            <a href="{% url 'artista_detalle' cromo.artista.id %}" class="btn btn-sm w-100 mt-auto fw-bold" style="background: {{ cromo.color_borde }}; color: #000; border-radius: 10px;">{% trans "Ver Perfil del Artista" %}</a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+            <h4 class="text-white">{% trans "Aún no hay cromos disponibles en el álbum." %}</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        VanillaTilt.init(document.querySelectorAll(".cromo-card"), {
+            max: 15,
+            speed: 500,
+            glare: false, // Disabling VanillaTilt glare because we use a custom diagonal CSS glare,
+            perspective: 2000,
+            transition: true
+        });
+    });
+</script>
+{% endblock %}

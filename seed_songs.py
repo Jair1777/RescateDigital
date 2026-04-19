@@ -4,107 +4,52 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rescate_musical.settings')
 django.setup()
 
-from musica.models import Cancion, GeneroMusical
+from musica.models import GeneroMusical, Cancion
 from artistas.models import Artista
 
-# Map genres for easy lookup
-gen_map = {g.nombre: g for g in GeneroMusical.objects.all()}
-
-data = [
-    {
-        "artista": "Salvador Bustamante Celi",
-        "cancion": "Dulce Jesús Mío",
-        "genero": "Villancico",
-        "url": "https://www.youtube.com/watch?v=0kG5mFq22-Q"
-    },
-    {
-        "artista": "Salvador Bustamante Celi",
-        "cancion": "Amor y Olvido",
-        "genero": "Pasillo",
-        "url": "https://www.youtube.com/watch?v=J8_7iH_O_s0"
-    },
-    {
-        "artista": "Segundo Cueva Celi",
-        "cancion": "Vaso de Lágrimas",
-        "genero": "Pasillo",
-        "url": "https://www.youtube.com/watch?v=4Yv5U_m03r8"
-    },
-    {
-        "artista": "Segundo Cueva Celi",
-        "cancion": "Pequeña Ciudadana",
-        "genero": "Pasillo",
-        "url": "https://www.youtube.com/watch?v=R9M-mXitDsc"
-    },
-    {
-        "artista": "Manuel de Jesús Lozano",
-        "cancion": "Ya no te quiero, pero no te olvido",
-        "genero": "Pasillo",
-        "url": "https://www.youtube.com/watch?v=W0nL93_69mE"
-    },
-    {
-        "artista": "Manuel de Jesús Lozano",
-        "cancion": "Traguito Lojano",
-        "genero": "Pasacalle",
-        "url": "https://www.youtube.com/watch?v=Kz69k0j7t9w"
-    },
-    {
-        "artista": "Marcos Ochoa Muñoz",
-        "cancion": "La Flor Zamorana",
-        "genero": "Pasillo",
-        "url": "https://www.youtube.com/watch?v=7M7O9u-I2tA"
-    },
-    {
-        "artista": "Marcos Ochoa Muñoz",
-        "cancion": "Nostalgias",
-        "genero": "Pasillo",
-        "url": "https://www.youtube.com/watch?v=3jK6F_O7K7Q"
-    },
-    {
-        "artista": "David Pacheco Ochoa",
-        "cancion": "El Chulla Quiteño",
-        "genero": "Pasacalle",
-        "url": "https://www.youtube.com/watch?v=tT8O9V99yGk"
-    },
-    {
-        "artista": "David Pacheco Ochoa",
-        "cancion": "Sangre Lojana",
-        "genero": "Pasacalle",
-        "url": "https://www.youtube.com/watch?v=BqB8GqjI6M4"
-    },
-    {
-        "artista": "Emiliano Ortega Espinosa",
-        "cancion": "Lojanita",
-        "genero": "Pasacalle",
-        "url": "https://www.youtube.com/watch?v=Xz5-vVq9n8o"
-    },
-    {
-        "artista": "Carlos Bonilla Chávez",
-        "cancion": "Cantares de mi Tierra",
-        "genero": "Guitarra Clásica",
-        "url": "https://www.youtube.com/watch?v=p79tCg-XvX0"
-    }
+songs_data = [
+    ('Sigan Bailando', 'Marcos Ochoa Muñoz', 'Pasacalle', 'Un ritmo lleno de energía, ideal para mostrar la alegría de las fiestas lojanas.', 'https://www.youtube.com/watch?v=Fj-9LzZ5L7M'),
+    ('Para tus ojos', 'Segundo Cueva Celi', 'Pasillo', 'Una de sus composiciones más románticas y técnicamente hermosas.', 'https://www.youtube.com/watch?v=HQfFPlpdYqo'),
+    ('Linda Loja', 'Hermanos Quezada', 'Pasacalle', 'Un tema icónico que describe la belleza de la ciudad, muy usado en eventos cívicos.', 'https://www.youtube.com/watch?v=R95-X7zV_2k'),
+    ('Los Huerfanitos', 'Manuel de Jesús Lozano', 'Pasacalle', 'Un clásico de las bandas de pueblo que compuso el \"Juglar de Loja\".', 'https://www.youtube.com/watch?v=W3A9p2S-Wv0'),
+    ('Ojos Azules', 'David Pacheco Ochoa', 'Vals', 'Muestra la versatilidad de Pacheco Ochoa en ritmos más pausados y melódicos.', 'https://www.youtube.com/watch?v=ZtN_q-GkO9k'),
+    ('El Minero', 'Dagoberto Vilela', 'Pasacalle', 'Un homenaje a los trabajadores de la región sur del Ecuador, con un ritmo contagioso.', 'https://www.youtube.com/watch?v=Dk-m5i8Z_tU'),
+    ('Mosaico de Pasillos', 'Medardo Luzuriaga', 'Pasillo', 'Una excelente muestra de cómo los autores lojanos arreglaban música para orquestas.', 'https://www.youtube.com/watch?v=5U9jR6_X3oY'),
+    ('Corazón que no olvida', 'Héctor Román', 'Pasillo', 'Un autor lojano menos mencionado pero con una sensibilidad exquisita.', 'https://www.youtube.com/watch?v=L2GkYl-M6L0'),
+    ('Misa de la Coronación', 'Salvador Bustamante Celi', 'Música Sacra', 'Para mostrar su legado en la música religiosa de la Catedral de Loja.', 'https://www.youtube.com/watch?v=XhYn2V8W9A0'),
+    ('Recuerdos de Amor', 'Tito Quinde', 'Pasillo', 'Representante de la generación de músicos que mantuvieron viva la tradición en la segunda mitad del siglo XX.', 'https://www.youtube.com/watch?v=vV7Y_9I5n0k'),
 ]
 
-for item in data:
-    try:
-        artista = Artista.objects.get(nombre=item['artista'])
-        genero = gen_map.get(item['genero'])
-        
-        cancion, created = Cancion.objects.update_or_create(
-            titulo=item['cancion'],
-            compositor=artista,
-            defaults={
-                'genero': genero,
-                'url_youtube': item['url'],
-                'descripcion': f"Interpretación emblemática de {item['artista']}."
-            }
-        )
-        if created:
-            print(f"Canción añadida: {item['cancion']}")
-        else:
-            print(f"Canción actualizada: {item['cancion']}")
-            
-    except Artista.DoesNotExist:
-        print(f"Error: Artista {item['artista']} no encontrado.")
+for title, artist_name, genre_name, desc, url in songs_data:
+    genre, _ = GeneroMusical.objects.get_or_create(
+        nombre=genre_name,
+        defaults={
+            'slug': genre_name.lower().replace(' ', '-'),
+            'descripcion_historica': f'Género {genre_name}.',
+            'caracteristicas_musicales': '...'
+        }
+    )
+    
+    artist, _ = Artista.objects.get_or_create(
+        nombre=artist_name,
+        defaults={
+            'biografia': 'Artista lojano destacado.'
+        }
+    )
+    
+    cancion, created = Cancion.objects.get_or_create(
+        titulo=title,
+        genero=genre,
+        defaults={
+            'compositor': artist,
+            'descripcion': desc,
+            'url_youtube': url
+        }
+    )
+    if not created:
+        cancion.url_youtube = url
+        cancion.descripcion = desc
+        cancion.compositor = artist
+        cancion.save()
 
-print("Proceso de carga de canciones finalizado.")
+print('Songs seeded successfully.')

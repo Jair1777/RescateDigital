@@ -1,0 +1,524 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans "Batalla contra el Líder" %}{% endblock %}
+
+{% block extra_css %}
+<!-- Pixel Font -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+    /* UNDERTALE STYLE OVERRIDE */
+    body {
+        background-color: #000 !important;
+        font-family: 'Press Start 2P', monospace !important;
+        color: #fff;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .battle-area {
+        min-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 3rem;
+        padding-bottom: 2rem;
+    }
+
+    /* Boss Sprite Area */
+    .boss-sprite-container {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    @keyframes sans-breathe {
+        0% { transform: scaleY(1) scaleX(1) translateY(0); }
+        50% { transform: scaleY(0.96) scaleX(1.02) translateY(3px); }
+        100% { transform: scaleY(1) scaleX(1) translateY(0); }
+    }
+
+    .boss-sprite {
+        width: 180px;
+        height: 180px;
+        background: url('{% static "img/sans_true_color.png" %}') center/contain no-repeat;
+        margin: 0 auto 1rem auto;
+        animation: sans-breathe 1.5s ease-in-out infinite;
+        transform-origin: bottom center;
+        /* Adds a subtle white ghost to ensure black outlines are visible on black bg */
+        filter: drop-shadow(0 0 2px rgba(255,255,255,0.8)); 
+    }
+
+    .boss-name {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+        color: #fff;
+    }
+    
+    .boss-hp-bar {
+        width: 200px;
+        height: 15px;
+        background: #333;
+        margin: 0.5rem auto;
+        border: 2px solid #000;
+        position: relative;
+    }
+    
+    #boss-hp-fill {
+        background: #00ff00;
+        height: 100%;
+        width: 100%;
+        transition: width 0.3s;
+    }
+
+    @keyframes dmg-shake {
+        0% { transform: translate(0); filter: drop-shadow(0 0 10px #ff0000) invert(0) sepia(1) hue-rotate(300deg); }
+        20% { transform: translate(-15px); filter: drop-shadow(0 0 10px #ff0000) invert(0) sepia(1) hue-rotate(300deg); }
+        40% { transform: translate(15px); filter: drop-shadow(0 0 10px #ff0000) invert(0) sepia(1) hue-rotate(300deg); }
+        60% { transform: translate(-15px); }
+        80% { transform: translate(15px); }
+        100% { transform: translate(0); filter: drop-shadow(0 0 2px rgba(255,255,255,0.8)); }
+    }
+
+    .boss-damage {
+        animation: dmg-shake 0.5s !important;
+    }
+
+    @keyframes heal-glow {
+        0% { filter: drop-shadow(0 0 0 #00ff00); }
+        50% { filter: drop-shadow(0 0 30px #00ff00); }
+        100% { filter: drop-shadow(0 0 0 #00ff00); }
+    }
+    
+    .player-heal { animation: heal-glow 1s ease-in-out; }
+
+    /* Main Dialog Box */
+    .dialog-box {
+        width: 100%;
+        max-width: 800px;
+        min-height: 150px; /* Reduced from 200 to give space */
+        height: auto;
+        border: 4px solid #fff;
+        background: #000;
+        border-radius: 0;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    #dialog-text {
+        margin-bottom: auto;
+    }
+
+    /* Options / Buttons Area (FIGHT / HEAL / ACT) */
+    .options-grid {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 2rem;
+        width: 100%;
+        max-width: 800px;
+        flex-wrap: wrap;
+    }
+
+    .ut-btn {
+        flex: 1;
+        min-width: 250px;
+        background: #000;
+        border: 4px solid #ff8c00;
+        color: #ff8c00;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 1.1rem;
+        text-align: left;
+        padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+        cursor: pointer;
+        position: relative;
+        text-transform: uppercase;
+        transition: all 0.2s;
+    }
+
+    .ut-btn:hover {
+        background: rgba(255, 140, 0, 0.1);
+        color: #ffff00;
+        border-color: #ffff00;
+        transform: scale(1.05); /* slightly popup */
+    }
+
+    .soul-icon {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ff0000;
+        font-size: 1.4rem;
+        display: none;
+    }
+    
+    .ut-btn:hover .soul-icon {
+        display: block;
+    }
+
+    /* Player Status Bar */
+    .player-status {
+        width: 100%;
+        max-width: 800px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 2rem;
+        font-size: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .hp-text { color: #fff; }
+
+    .player-hp-bar {
+        width: 150px;
+        height: 30px;
+        background: #ff0000;
+        position: relative;
+    }
+
+    #player-hp-fill {
+        background: #ffff00;
+        height: 100%;
+        width: 100%;
+        transition: width 0.3s;
+    }
+
+    .player-name {
+        letter-spacing: 2px;
+    }
+
+    /* Start / Death Overlays */
+    .overlay-ut {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: #000;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .overlay-ut.d-none { display: none !important; }
+
+    .game-over-text {
+        font-size: 4rem;
+        letter-spacing: 5px;
+        color: #fff;
+        margin-bottom: 2rem;
+    }
+
+    .btn-start-ut {
+        background: #000;
+        color: #ff8c00;
+        border: 4px solid #ff8c00;
+        font-family: 'Press Start 2P', monospace;
+        padding: 1.5rem 3rem;
+        cursor: pointer;
+        font-size: 1.5rem;
+        margin-top: 2rem;
+    }
+    .btn-start-ut:hover {
+        color: #ffff00; border-color: #ffff00;
+    }
+
+    .victory-text-ut {
+        color: #ffff00;
+        font-size: 3rem;
+        margin-bottom: 2rem;
+    }
+
+    footer.site-footer { display: none !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="battle-area container">
+
+    <!-- START SCREEN -->
+    <div id="start-overlay" class="overlay-ut">
+        <h1 class="mb-5" style="letter-spacing: 5px; font-size: 2.5rem; color: #ff8c00;">{% trans "MODO DETERMINACIÓN" %}</h1>
+        <p class="mb-5" style="line-height: 2; max-width: 700px; font-size: 1.2rem;">
+            {% trans "* Un extraño Líder bloquea el paso." %}<br><br>
+            {% trans "* Mantén tu DETERMINACIÓN." %}<br>
+            {% trans "* Usa tus tácticas para esquivar ataques o contraatacar." %}
+        </p>
+        <button id="start-btn" class="btn-start-ut">
+            <i class="fas fa-heart text-danger"></i> ENTRAR
+        </button>
+    </div>
+
+    <!-- RESULT DOWN -->
+    <div id="game-over-overlay" class="overlay-ut d-none">
+        <h1 class="game-over-text">GAME OVER</h1>
+        <p class="mb-4 text-secondary">{% trans "* No pierdas la determinación ahora..." %}</p>
+        <p class="opacity-50 mt-5 text-secondary" style="font-size: 0.8rem;">{% trans "Volviendo al mundo exterior..." %}</p>
+    </div>
+    
+    <div id="victory-overlay" class="overlay-ut d-none">
+        <h1 class="victory-text-ut">YOU WON!</h1>
+        <p class="mb-4">{% trans "* Sobreviviste al COMBATE TÁCTICO." %}</p>
+        <p class="mb-4" style="color: #00ff00;">{% trans "* Obtuviste EXP y 25 Puntos de Fama Musical." %}</p>
+        <p class="opacity-50 mt-5" style="font-size: 0.8rem;">{% trans "Guardando progreso..." %}</p>
+    </div>
+
+    <form id="result-form" method="post" class="d-none">
+        {% csrf_token %}
+        <input type="hidden" name="puntos" id="points-input" value="0">
+    </form>
+
+    <!-- BOSS BOX -->
+    <div class="boss-sprite-container" id="boss-sprite-container">
+        <div class="boss-name mb-3">{{ top_user.first_name|default:top_user.username|upper }}</div>
+        <div class="boss-sprite"></div>
+        <div class="boss-hp-bar">
+            <div id="boss-hp-fill"></div>
+        </div>
+    </div>
+
+    <!-- MAIN BOX -->
+    <div class="dialog-box">
+        <div id="dialog-text">* {{ top_user.first_name|default:top_user.username }} se prepara para atacar.</div>
+    </div>
+    
+    <div class="options-grid" id="options-container" style="display: none;">
+        <!-- Javascript renders buttons here -->
+    </div>
+
+    <!-- PLAYER UI -->
+    <div class="player-status" id="player-status-bar">
+        <div class="player-name">{{ request.user.first_name|default:"CHIL"|slice:":4"|upper }}</div>
+        <div class="hp-text">LV 5</div>
+        <div class="hp-text">HP</div>
+        <div class="player-hp-bar">
+            <div id="player-hp-fill"></div>
+        </div>
+        <div class="hp-text" id="hp-numbers">40 / 40</div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Tactical Situational Combat mapping RPG elements with Loja music knowledge.
+    const situations = [
+        { 
+            q: "* El Líder invoca una tormenta inesquivable de notas disonantes. Tu Defensa baja.", 
+            a: "Cubrirse con Partituras", 
+            aType: "defend", // Takes minimal damage, boss takes no damage
+            opts: ["Tirar Oboe", "Huir", "Cubrirse con Partituras", "Cantar"] 
+        },
+        { 
+            q: "* ¡El Líder está agotado después de un fuerte pasacalle! Baja su guardia.", 
+            a: "Atacar con un Pasillo Fuerte", 
+            aType: "attack", // Heavy damage to boss
+            opts: ["Perdonar", "Llorar en un rincón", "Atacar con un Pasillo Fuerte", "Dar un abrazo"] 
+        },
+        { 
+            q: "* Un enorme violín de madera cae violentamente desde el techo hacia ti.", 
+            a: "Esquivar bailando Sanjuanito", 
+            aType: "dodge", // Avoids damage safely
+            opts: ["Esquivar bailando Sanjuanito", "Intentar atraparlo", "Recitar poesía heroica", "Atacar al violín"] 
+        },
+        { 
+            q: "* Te sientes cansado. Has perdido mucha energía. Necesitas recuperar HP.", 
+            a: "Tomar Horchata Lojana (Curar)", 
+            aType: "heal", // Heals player
+            opts: ["Tomar Horchata Lojana (Curar)", "Seguir atacando", "Rogar piedad", "Romper la guitarra"] 
+        },
+        { 
+            q: "* El Líder usa su Ataque Especial 'Acordes Rojos'. Todo el suelo se vuelve magma.", 
+            a: "Pisotear el suelo (Contraataque)", 
+            aType: "counter", // Deals moderate damage and protects
+            opts: ["Dormirse", "Aceptar el destino", "Volar", "Pisotear el suelo (Contraataque)"] 
+        },
+        { 
+            q: "* El Líder te acorrala y exige que recites al poeta Emiliano Ortega.", 
+            a: "Recitar 'Valles de mi tierra'", 
+            aType: "act", // Act successful, pacifies boss next turn
+            opts: ["Recitar Romeo y Julieta", "Recitar 'Valles de mi tierra'", "Atacar físicamente", "Cantar Reggaeton"] 
+        }
+    ];
+
+    let playerMaxHP = 40;
+    let playerHP = 40;
+    let bossMaxHP = 100;
+    let bossHP = 100;
+    let currentS = 0;
+    let isTyping = false;
+    let ptsWon = 0;
+
+    const startBtn = document.getElementById('start-btn');
+    const startOverlay = document.getElementById('start-overlay');
+    const dialogText = document.getElementById('dialog-text');
+    const optsBox = document.getElementById('options-container');
+    const pFill = document.getElementById('player-hp-fill');
+    const hpNums = document.getElementById('hp-numbers');
+    const bFill = document.getElementById('boss-hp-fill');
+    const bossCont = document.getElementById('boss-sprite-container');
+    const pStatus = document.getElementById('player-status-bar');
+
+    startBtn.onclick = () => {
+        startOverlay.classList.add('d-none');
+        setTimeout(playTurn, 1000);
+    };
+
+    function updateBars() {
+        pFill.style.width = (playerHP / playerMaxHP * 100) + "%";
+        hpNums.innerText = playerHP + " / " + playerMaxHP;
+        bFill.style.width = (bossHP / bossMaxHP * 100) + "%";
+        
+        if(bossHP <= 50) bFill.style.background = "#ffff00";
+        if(bossHP <= 20) bFill.style.background = "#ff0000";
+
+        if(playerHP <= 15) pFill.style.background = "#ff9900";
+        else pFill.style.background = "#ffff00";
+    }
+
+    // Typewriter effect
+    function typeText(text, callback) {
+        optsBox.style.display = 'none';
+        dialogText.innerHTML = '';
+        isTyping = true;
+        let i = 0;
+        
+        const typeInterval = setInterval(() => {
+            dialogText.innerHTML += text.charAt(i);
+            i++;
+            if(i >= text.length) {
+                clearInterval(typeInterval);
+                isTyping = false;
+                if(callback) setTimeout(callback, 800);
+            }
+        }, 30);
+    }
+
+    function playTurn() {
+        if(playerHP <= 0 || bossHP <= 0 || currentS >= situations.length) {
+            endCombat();
+            return;
+        }
+
+        const s = situations[currentS];
+        typeText(s.q, () => {
+            showActionOptions(s);
+        });
+    }
+
+    function showActionOptions(s) {
+        optsBox.innerHTML = '';
+        let optsArray = [...s.opts].sort(() => Math.random() - 0.5);
+
+        optsArray.forEach(opt => {
+            let iconText = "🗡 FIGHT";
+            // Map text dynamically to icon styling based on Undertale aesthetic
+            if (opt.includes("Curar") || opt.includes("Horchata")) iconText = "♥ HEAL";
+            else if (opt.includes("Recitar") || opt.includes("Cantar")) iconText = "🗣 ACT";
+            else if (opt.includes("Esquivar") || opt.includes("Cubrirse")) iconText = "🛡 DEFEND";
+            else if (opt.includes("Huir") || opt.includes("Perdonar")) iconText = "✖ MERCY";
+            
+            const btn = document.createElement('button');
+            btn.className = 'ut-btn';
+            btn.innerHTML = `<i class="fas fa-heart soul-icon"></i> ${iconText} <br><span style="font-size: 0.8rem; opacity: 0.8; margin-top: 10px; display: block;">${opt}</span>`;
+            
+            btn.onclick = () => processAction(opt, s.a, s.aType);
+            optsBox.appendChild(btn);
+        });
+        
+        optsBox.style.display = 'flex';
+    }
+
+    function processAction(selected, correct, actionType) {
+        optsBox.style.display = 'none';
+
+        if(selected === correct) {
+            // SUCCESSFUL TACTIC
+            ptsWon += 5;
+            let msg = "";
+
+            if(actionType === "attack") {
+                msg = "* IMPACTO CRÍTICO. Has dañado gravemente al Líder.";
+                triggerBossDamage(34); // 3 hits kill boss
+            } else if (actionType === "heal") {
+                msg = "* Te bebes la Horchata. Te sientes determinado. Recuperas HP.";
+                triggerHeal(15);
+            } else if (actionType === "dodge" || actionType === "defend") {
+                msg = "* Logras esquivar exitosamente el ataque letal del Líder.";
+            } else if (actionType === "counter") {
+                msg = "* El ritmo es tuyo. Has contraatacado a la perfección.";
+                triggerBossDamage(15);
+            } else {
+                msg = "* El Líder parece apaciguarse al escuchar tus palabras.";
+            }
+
+            typeText(msg, () => {
+                currentS++;
+                setTimeout(playTurn, 1000);
+            });
+
+        } else {
+            // FAILED TACTIC -> Take massive damage
+            typeText("* Mala elección. El Líder no tiene piedad. ¡Recibes mucho daño!", () => {
+                playerHP -= 12; // Out of 40 (Dies in 3 or 4 hits)
+                if(playerHP < 0) playerHP = 0;
+                
+                // Shake player HUD
+                pStatus.classList.add('boss-damage');
+                setTimeout(() => pStatus.classList.remove('boss-damage'), 500);
+
+                updateBars();
+
+                if(playerHP <= 0) {
+                    setTimeout(endCombat, 1000);
+                } else {
+                    currentS++;
+                    setTimeout(playTurn, 1000);
+                }
+            });
+        }
+    }
+
+    function triggerBossDamage(amount) {
+        bossCont.classList.add('boss-damage');
+        setTimeout(() => bossCont.classList.remove('boss-damage'), 500);
+        bossHP -= amount; 
+        if(bossHP < 0) bossHP = 0;
+        updateBars();
+    }
+
+    function triggerHeal(amount) {
+        pStatus.classList.add('player-heal');
+        setTimeout(() => pStatus.classList.remove('player-heal'), 1000);
+        playerHP += amount;
+        if(playerHP > playerMaxHP) playerHP = playerMaxHP;
+        updateBars();
+    }
+
+    function endCombat() {
+        if(bossHP === 0 || playerHP > 0 && currentS >= situations.length) {
+            // Victory
+            document.getElementById('victory-overlay').classList.remove('d-none');
+            document.getElementById('points-input').value = ptsWon + 10;
+        } else {
+            // Defeat
+            document.getElementById('game-over-overlay').classList.remove('d-none');
+            document.getElementById('points-input').value = Math.max(0, ptsWon - 5);
+        }
+
+        setTimeout(() => {
+            document.getElementById('result-form').submit();
+        }, 4000);
+    }
+</script>
+{% endblock %}

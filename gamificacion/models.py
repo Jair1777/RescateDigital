@@ -133,3 +133,33 @@ class ResultadoQuiz(models.Model):
     def __str__(self):
         return f'{self.usuario.username} - {self.quiz.titulo} ({self.puntos} pts)'
 
+class Cromo(models.Model):
+    nombre = models.CharField(max_length=150)
+    nombre_en = models.CharField(max_length=150, blank=True)
+    descripcion = models.TextField(blank=True)
+    descripcion_en = models.TextField(blank=True)
+    puntos_requeridos = models.IntegerField(default=0)
+    icono = models.CharField(max_length=100, default='fas fa-star') # FontAwesome class or use ImageField
+    rareza = models.CharField(max_length=50, default='Común')
+    color_borde = models.CharField(max_length=20, default='#e3aa59')
+    artista = models.ForeignKey('artistas.Artista', on_delete=models.SET_NULL, null=True, blank=True, related_name='cromos')
+
+    def get_translated(self, field_name):
+        lang = get_language()
+        if lang == 'en':
+            attr = f"{field_name}_en"
+            val = getattr(self, attr, None)
+            if val: return val
+        return getattr(self, field_name)
+
+    @property
+    def translated_nombre(self):
+        return self.get_translated('nombre')
+
+    @property
+    def translated_descripcion(self):
+        return self.get_translated('descripcion')
+
+    def __str__(self):
+        return f'Cromo: {self.nombre} ({self.puntos_requeridos} pts)'
+

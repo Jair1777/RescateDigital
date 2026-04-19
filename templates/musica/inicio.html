@@ -11,7 +11,7 @@
         --music-accent: #d9258a; 
         --music-lava: #ff4a3d; 
         
-        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('{% static "images/musica_bg_premium.png" %}') no-repeat center top fixed;
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('/static/images/musica_bg_premium.png') no-repeat center top fixed;
         background-size: cover;
         color: #ffffff;
         min-height: 100vh;
@@ -65,7 +65,13 @@
         position: fixed; bottom: 0; left: 0; width: 100%; height: 90px;
         background: #000; border-top: 1px solid #282828;
         display: flex; align-items: center; justify-content: space-between;
-        padding: 0 16px; z-index: 9999;
+        padding: 0 16px; z-index: 1040;
+    }
+    @media (min-width: 992px) {
+        .music-player {
+            left: 85px;
+            width: calc(100% - 85px);
+        }
     }
     .player-left { width: 30%; display: flex; align-items: center; }
     .np-info { margin-left: 12px; }
@@ -99,7 +105,7 @@
             <p class="text-uppercase fw-bold small mb-1">{% trans "Playlist" %}</p>
             <h1>{% trans "Música de Loja" %}</h1>
             <p class="mb-2 opacity-75">{% trans "Lo mejor de nuestra tierra directamente para tus oídos." %}</p>
-            <div class="small fw-bold">10 {% trans "canciones" %}</div>
+            <div class="small fw-bold">{{ todas_canciones.count|default:"0" }} {% trans "canciones" %}</div>
         </div>
     </div>
 
@@ -118,66 +124,16 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="track-row" onclick="playTrack(0)" id="track-0">
-                    <td class="text-center">1</td>
-                    <td><span class="track-title">Dulce Jesús Mío</span></td>
-                    <td>Salvador Bustamante Celi</td>
-                    <td>Villancico Tradicional</td>
+                {% for cancion in todas_canciones %}
+                <tr class="track-row" onclick="playTrack({{ forloop.counter0 }})" id="track-{{ forloop.counter0 }}">
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td><span class="track-title">{{ cancion.titulo }}</span></td>
+                    <td>{{ cancion.compositor.nombre|default:"Varios Artistas" }}</td>
+                    <td>{{ cancion.genero.nombre }}</td>
                 </tr>
-                <tr class="track-row" onclick="playTrack(1)" id="track-1">
-                    <td class="text-center">2</td>
-                    <td><span class="track-title">Vaso de Lágrimas</span></td>
-                    <td>Segundo Cueva Celi</td>
-                    <td>Pasillo Clásico</td>
-                </tr>
-                <tr class="track-row" onclick="playTrack(2)" id="track-2">
-                    <td class="text-center">3</td>
-                    <td><span class="track-title">Para tus ojos</span></td>
-                    <td>Segundo Cueva Celi</td>
-                    <td>Pasillo</td>
-                </tr>
-                <tr class="track-row" onclick="playTrack(3)" id="track-3">
-                    <td class="text-center">4</td>
-                    <td><span class="track-title">Ya no te quiero, pero no te olvido (Letra)</span></td>
-                    <td>Manuel de Jesús Lozano</td>
-                    <td>Pasillo</td>
-                </tr>
-                <tr class="track-row" onclick="playTrack(4)" id="track-4">
-                    <td class="text-center">5</td>
-                    <td><span class="track-title">Ya no te quiero, pero no te olvido (Museo)</span></td>
-                    <td>Manuel de Jesús Lozano</td>
-                    <td>Pasillo</td>
-                </tr>
-                <tr class="track-row" onclick="playTrack(5)" id="track-5">
-                    <td class="text-center">6</td>
-                    <td><span class="track-title">La Flor Zamorana</span></td>
-                    <td>Marcos Ochoa Muñoz</td>
-                    <td>Pasillo</td>
-                </tr>
-                <tr class="track-row" onclick="playTrack(6)" id="track-6">
-                    <td class="text-center">7</td>
-                    <td><span class="track-title">Alma Lojana</span></td>
-                    <td>Emiliano Ortega Espinosa</td>
-                    <td>Pasillo</td>
-                </tr>
-                <tr class="track-row" onclick="playTrack(7)" id="track-7">
-                    <td class="text-center">8</td>
-                    <td><span class="track-title">Cantares del Alma</span></td>
-                    <td>Carlos Bonilla Chávez</td>
-                    <td>Pasillo</td>
-                </tr>
-                <tr class="track-row" onclick="playTrack(8)" id="track-8">
-                    <td class="text-center">9</td>
-                    <td><span class="track-title">Enamorado</span></td>
-                    <td>Carlos Bonilla Chávez</td>
-                    <td>Valse Ecuatoriano</td>
-                </tr>
-                <tr class="track-row" onclick="playTrack(9)" id="track-9">
-                    <td class="text-center">10</td>
-                    <td><span class="track-title">Ninfa de Luz</span></td>
-                    <td>David Pacheco Ochoa</td>
-                    <td>Pasillo Lojano</td>
-                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center py-4">No hay canciones disponibles.</td></tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -227,16 +183,14 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
     let playlist = [
-        { title: "Dulce Jesús Mío", artist: "Salvador Bustamante Celi", src: "", yt: "http://www.youtube.com/watch?v=cS85ZRePmWc" },
-        { title: "Vaso de Lágrimas", artist: "Segundo Cueva Celi", src: "", yt: "http://www.youtube.com/watch?v=1qd2D-Nam8E" },
-        { title: "Para tus ojos", artist: "Segundo Cueva Celi", src: "", yt: "http://www.youtube.com/watch?v=HQfFPlpdYqo" },
-        { title: "Ya no te quiero, pero no te olvido (Letra)", artist: "Manuel de Jesús Lozano", src: "", yt: "http://www.youtube.com/watch?v=wWKRFQcGVK8" },
-        { title: "Ya no te quiero, pero no te olvido (Museo)", artist: "Manuel de Jesús Lozano", src: "", yt: "http://www.youtube.com/watch?v=CJF4QU6Ji98" },
-        { title: "La Flor Zamorana", artist: "Marcos Ochoa Muñoz", src: "", yt: "http://www.youtube.com/watch?v=NlaVVe5Q5LA" },
-        { title: "Alma Lojana", artist: "Emiliano Ortega Espinosa", src: "", yt: "http://www.youtube.com/watch?v=jVByvAs1z8I" },
-        { title: "Cantares del Alma", artist: "Carlos Bonilla Chávez", src: "", yt: "http://www.youtube.com/watch?v=oALT811g0OY" },
-        { title: "Enamorado", artist: "Carlos Bonilla Chávez", src: "", yt: "http://www.youtube.com/watch?v=vJodUYsIf1Y" },
-        { title: "Ninfa de Luz", artist: "David Pacheco Ochoa", src: "", yt: "http://www.youtube.com/watch?v=k7OHiHOtVU8" }
+        {% for cancion in todas_canciones %}
+        { 
+            title: "{{ cancion.titulo|escapejs }}", 
+            artist: "{{ cancion.compositor.nombre|default:'Varios Artistas'|escapejs }}", 
+            src: "{% if cancion.archivo_audio %}{{ cancion.archivo_audio.url|escapejs }}{% else %}{% endif %}", 
+            yt: "{{ cancion.url_youtube|default_if_none:''|escapejs }}" 
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
     ];
 
     let currentIndex = -1;

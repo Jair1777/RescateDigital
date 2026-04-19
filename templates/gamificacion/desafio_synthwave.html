@@ -1,0 +1,529 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans "Desafío de Velocidad - Rescate Digital" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Premium Synthwave/Cyberpunk Boss Battle Environment */
+    body {
+        margin: 0;
+        background-color: #050505;
+        overflow-x: hidden;
+    }
+
+    .battle-bg {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at top, #1a0b2e 0%, #050505 80%);
+        z-index: -2;
+    }
+
+    /* Synthwave Grid Floor */
+    .grid-floor {
+        position: fixed;
+        bottom: 0; left: -50%; width: 200%; height: 60vh;
+        background-image: 
+            linear-gradient(rgba(240, 19, 77, 0.5) 2px, transparent 2px),
+            linear-gradient(90deg, rgba(240, 19, 77, 0.5) 2px, transparent 2px);
+        background-size: 80px 80px;
+        transform: perspective(600px) rotateX(75deg);
+        transform-origin: bottom center;
+        animation: grid-move 2s linear infinite;
+        z-index: -1;
+    }
+
+    @keyframes grid-move {
+        0% { transform: perspective(600px) rotateX(75deg) translateY(0); }
+        100% { transform: perspective(600px) rotateX(75deg) translateY(80px); }
+    }
+
+    .game-container {
+        min-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        padding-top: 2rem;
+    }
+
+    /* UI Health Bars */
+    .hp-hud {
+        width: 100%;
+        max-width: 1000px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .player-profile, .boss-profile {
+        display: flex;
+        flex-direction: column;
+        width: 40%;
+    }
+
+    .player-profile { align-items: flex-start; }
+    .boss-profile { align-items: flex-end; }
+
+    .name-tag {
+        font-family: 'Inter', sans-serif;
+        font-weight: 900;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #fff;
+        margin-bottom: 0.5rem;
+    }
+
+    .user-name { color: #00f3ff; text-shadow: 0 0 10px #00f3ff; }
+    .boss-name { color: #ff003c; text-shadow: 0 0 10px #ff003c; }
+
+    .hp-bar-container {
+        width: 100%;
+        height: 25px;
+        background: rgba(255,255,255,0.1);
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .hp-fill {
+        height: 100%;
+        width: 100%;
+        transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s;
+    }
+
+    #user-hp-fill {
+        background: linear-gradient(90deg, #00d2ff, #00f3ff);
+        box-shadow: 0 0 15px #00f3ff;
+        transform-origin: left;
+    }
+
+    #boss-hp-fill {
+        background: linear-gradient(270deg, #ff0000, #ff003c);
+        box-shadow: 0 0 15px #ff003c;
+        transform-origin: right;
+        float: right;
+    }
+
+    .vs-badge {
+        font-size: 3rem;
+        font-weight: 900;
+        font-style: italic;
+        color: #ffd700;
+        text-shadow: 0 0 20px #ffd700, 0 0 40px #ff8c00;
+        animation: pulse-vs 1.5s infinite alternate;
+    }
+
+    @keyframes pulse-vs {
+        0% { transform: scale(1); }
+        100% { transform: scale(1.2); }
+    }
+
+    /* Screen Shake for damage */
+    @keyframes shakeDamage {
+        0% { transform: translate(0); }
+        20% { transform: translate(-10px, 5px); background-color: rgba(255,0,0,0.1); }
+        40% { transform: translate(10px, -5px); }
+        60% { transform: translate(-10px, 5px); }
+        80% { transform: translate(10px, -5px); background-color: rgba(255,0,0,0.1); }
+        100% { transform: translate(0); background-color: transparent;}
+    }
+
+    .damage-shake {
+        animation: shakeDamage 0.4s ease-in-out;
+    }
+
+    /* Quiz Box area */
+    .question-box {
+        background: rgba(10, 10, 15, 0.85);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
+        border-radius: 20px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 800px;
+        text-align: center;
+        margin-top: 1rem;
+        color: white;
+    }
+
+    #question-text {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        line-height: 1.4;
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .quiz-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 1.2rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .quiz-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transform: skewX(-20deg);
+        transition: all 0.4s;
+    }
+
+    .quiz-card:hover {
+        transform: translateY(-5px);
+        border-color: #00f3ff;
+        box-shadow: 0 5px 15px rgba(0, 243, 255, 0.3);
+        background: rgba(0, 243, 255, 0.1);
+    }
+
+    .quiz-card:hover::before {
+        left: 150%;
+    }
+
+    .quiz-card.correct {
+        background: #00ff88 !important;
+        border-color: #00ff88 !important;
+        color: #000;
+        box-shadow: 0 0 30px #00ff88;
+        transform: scale(1.05);
+    }
+
+    .quiz-card.incorrect {
+        background: #ff003c !important;
+        border-color: #ff003c !important;
+        color: #fff;
+        box-shadow: 0 0 30px #ff003c;
+    }
+
+    /* Start / Result Overlays */
+    .overlay-fs {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.9);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+    }
+
+    #start-overlay h1 {
+        font-size: 4rem;
+        text-shadow: 0 0 20px #ff003c;
+        letter-spacing: 5px;
+        margin-bottom: 1rem;
+    }
+
+    #countdown {
+        font-size: 15rem;
+        font-weight: 900;
+        color: #00f3ff;
+        text-shadow: 0 0 50px #00f3ff;
+        animation: pulse-count 1s infinite alternate;
+    }
+
+    @keyframes pulse-count { 0% { transform: scale(0.9); } 100% { transform: scale(1.1); } }
+
+    .btn-cyber {
+        background: transparent;
+        color: #00f3ff;
+        border: 2px solid #00f3ff;
+        padding: 1rem 3rem;
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s;
+        box-shadow: 0 0 15px rgba(0,243,255,0.3), inset 0 0 15px rgba(0,243,255,0.3);
+    }
+    
+    .btn-cyber:hover {
+        background: #00f3ff;
+        color: #000;
+        box-shadow: 0 0 30px #00f3ff, inset 0 0 10px #000;
+    }
+
+    .victory-text { font-size: 6rem; color: #ffd700; text-shadow: 0 0 40px #ffd700; }
+    .defeat-text { font-size: 6rem; color: #ff003c; text-shadow: 0 0 40px #ff003c; }
+
+    footer.site-footer { display: none !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="battle-bg"></div>
+<div class="grid-floor"></div>
+
+<div class="game-container container pb-5" id="game-body">
+    
+    <!-- START SCREEN -->
+    <div id="start-overlay" class="overlay-fs">
+        <h1>{% trans "BATALLA DE VELOCIDAD" %}</h1>
+        <p class="lead mb-4 fs-3 opacity-75">{% trans "LÍDER ACTUAL:" %} <span class="text-danger fw-bold">{{ top_user.first_name|default:top_user.username }}</span></p>
+        
+        <div class="card bg-dark border-danger mb-5 p-4 text-center max-w-sm" style="max-width: 600px;">
+            <h4 class="text-warning mb-3"><i class="fas fa-exclamation-triangle"></i> {% trans "REGLAS DE SUPERVIVENCIA" %}</h4>
+            <ul class="list-unstyled text-start mb-0">
+                <li class="mb-2"><i class="fas fa-bolt text-info me-2"></i> {% trans "Tú y el líder tienen 100% de Energía." %}</li>
+                <li class="mb-2"><i class="fas fa-skull text-danger me-2"></i> {% trans "Tu energía se drena automáticamente con el tiempo. ¡Actúa rápido!" %}</li>
+                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> {% trans "Respuestas correctas DAÑAN al Líder y te curan." %}</li>
+                <li><i class="fas fa-times-circle text-danger me-2"></i> {% trans "Respuestas incorrectas TE DAÑAN gravemente." %}</li>
+            </ul>
+        </div>
+
+        <button id="start-btn" class="btn btn-cyber">
+            {% trans "ENTRAR AL COMBATE" %}
+        </button>
+        <div id="countdown" class="d-none">3</div>
+    </div>
+
+    <!-- HUD -->
+    <div class="hp-hud">
+        <div class="player-profile">
+            <div class="name-tag user-name">{% trans "TÚ" %}</div>
+            <div class="hp-bar-container">
+                <div id="user-hp-fill" class="hp-fill"></div>
+            </div>
+        </div>
+        
+        <div class="vs-badge">VS</div>
+
+        <div class="boss-profile">
+            <div class="name-tag boss-name">{{ top_user.first_name|default:top_user.username }}</div>
+            <div class="hp-bar-container">
+                <div id="boss-hp-fill" class="hp-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Box -->
+    <div class="question-box">
+        <h2 id="question-text">{% trans "Preparando combate..." %}</h2>
+        <div class="card-grid" id="options-container">
+            <!-- Interfaz JavaScript inyecta aquí -->
+        </div>
+    </div>
+
+    <!-- RESULT OVERLAY -->
+    <div id="result-overlay" class="overlay-fs d-none">
+        <div id="victory-state" class="d-none">
+            <i class="fas fa-trophy fa-7xl text-warning mb-4" style="font-size: 8rem; text-shadow: 0 0 40px #ffd700;"></i>
+            <h1 class="victory-text fw-bold mb-2">{% trans "¡LÍDER DERROTADO!" %}</h1>
+            <h3 class="text-white opacity-75 mb-4">{% trans "Tus reflejos fueron asombrosos." %}</h3>
+        </div>
+        <div id="defeat-state" class="d-none">
+            <i class="fas fa-skull-crossbones fa-7xl text-danger mb-4" style="font-size: 8rem; text-shadow: 0 0 40px #ff003c;"></i>
+            <h1 class="defeat-text fw-bold mb-2">{% trans "HAS CAÍDO" %}</h1>
+            <h3 class="text-white opacity-75 mb-4">{% trans "Fuiste demasiado lento y perdiste tu energía." %}</h3>
+        </div>
+        <p class="text-white opacity-50 mt-5">{% trans "Evaluando sistema y otorgando puntos de batalla..." %}</p>
+    </div>
+
+    <form id="result-form" method="post" class="d-none">
+        {% csrf_token %}
+        <input type="hidden" name="puntos" id="points-input" value="0">
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const questions = [
+        { q: "¿En qué siglo se instauró el Conservatorio de Música?", a: "Siglo XX", o: ["Siglo XIX", "Siglo XX", "Siglo XXI", "Siglo XVIII"] },
+        { q: "¿Qué instrumento solía dominar la música folclórica religiosa?", a: "El Órgano", o: ["El Rondador", "El Órgano", "El Oboe", "El Arpa"] },
+        { q: "¿Qué pasillo es considerado el himno lojano?", a: "Alma Lojana", o: ["Guayaquil de mis amores", "Alma Lojana", "Chola Cuencana", "Romance de mi destino"] },
+        { q: "¿A quién se le atribuye la difusión mundial del pasillo?", a: "Julio Jaramillo", o: ["Julio Jaramillo", "Salvador Bustamante", "Segundo Cueva", "Carlota Jaramillo"] },
+        { q: "¿Qué nombre lleva el festival de artes anual de Loja?", a: "Artes Vivas", o: ["Artes Vivas", "Música Activa", "Festival Andino", "Raíces"] },
+        { q: "¿Qué componente fundamental guarda el Museo de la Música?", a: "Partituras", o: ["Armas de guerra", "Partituras", "Trajes de baile", "Pinturas al óleo"] },
+        { q: "¿La Orquesta Sinfónica de Loja es considerada?", a: "De primera línea regional", o: ["Una banda barrial", "Totalmente amateur", "De primera línea regional", "Orquesta de jazz"] },
+        { q: "¿Qué teatro es sinónimo de historia en el centro de la ciudad?", a: "Teatro Bolívar", o: ["Teatro Bolívar", "Teatro Sucre", "Casa de Cultura", "Palacio Musical"] },
+        { q: "¿Qué artista compuso la célebre obra 'Corazón Quebrado'?", a: "Segundo Cueva Celi", o: ["Segundo Cueva Celi", "Salvador Bustamante", "Héctor Jaramillo", "Rubén Uquillas"] },
+        { q: "¿Cuál es una de las virtudes exigidas académicamente en Loja?", a: "Lectura de solfeo", o: ["Improvisación pura", "Lectura de solfeo", "Danza moderna", "Baila folclor"] },
+        { q: "¿Qué plaza es histórica para retretas musicales?", a: "San Sebastián", o: ["El Valle", "San Sebastián", "Santo Domingo", "Jipiro"] },
+        { q: "¿Qué género se baila con gran frenesí en festividades?", a: "Sanjuancito/Pasacalle", o: ["Ballet", "Sanjuancito/Pasacalle", "Reggaeton", "Vals"] }
+    ];
+
+    let userHP = 100;
+    let bossHP = 100;
+    let currentQ = 0;
+    let gameActive = false;
+    let attackInterval;
+    let ptsWon = 0;
+
+    const startBtn = document.getElementById('start-btn');
+    const startOverlay = document.getElementById('start-overlay');
+    const countdownEl = document.getElementById('countdown');
+    const userFill = document.getElementById('user-hp-fill');
+    const bossFill = document.getElementById('boss-hp-fill');
+    const qText = document.getElementById('question-text');
+    const optsBox = document.getElementById('options-container');
+    const gameBody = document.getElementById('game-body');
+
+    startBtn.onclick = () => {
+        startBtn.classList.add('d-none');
+        document.querySelector('.card').classList.add('d-none');
+        startOverlay.classList.remove('bg-dark', 'bg-opacity-90');
+        startOverlay.style.background = 'rgba(0,0,0,0.95)';
+        countdownEl.classList.remove('d-none');
+        
+        let c = 3;
+        countdownEl.innerText = c;
+        const tick = setInterval(() => {
+            c--;
+            if (c > 0) countdownEl.innerText = c;
+            else if (c === 0) countdownEl.innerText = "¡FIGHT!";
+            else {
+                clearInterval(tick);
+                startOverlay.classList.add('d-none');
+                startCombat();
+            }
+        }, 1000);
+    };
+
+    function startCombat() {
+        gameActive = true;
+        updateHPUI();
+        loadNextQuestion();
+
+        // Boss passive attack: drains user HP quickly
+        // -3 HP every 1 second = 33 seconds to live if you don't answer
+        attackInterval = setInterval(() => {
+            if(!gameActive) return;
+            userHP -= 3;
+            if(userHP <= 0) { userHP = 0; handleGameEnd(); }
+            updateHPUI();
+        }, 1000);
+    }
+
+    function updateHPUI() {
+        // change color to red if low
+        if(userHP < 30) userFill.style.background = 'linear-gradient(90deg, #ff0000, #ff8c00)';
+        else userFill.style.background = 'linear-gradient(90deg, #00d2ff, #00f3ff)';
+
+        userFill.style.width = userHP + "%";
+        bossFill.style.width = bossHP + "%";
+    }
+
+    function triggerDamageShake() {
+        gameBody.classList.remove('damage-shake');
+        void gameBody.offsetWidth; // trigger reflow
+        gameBody.classList.add('damage-shake');
+    }
+
+    function loadNextQuestion() {
+        if(!gameActive) return;
+        if(currentQ >= questions.length) {
+            // Technically win if answered all, or surviving
+            if(bossHP > 0) bossHP = 0; // Force win
+            handleGameEnd();
+            return;
+        }
+
+        const q = questions[currentQ];
+        // Shuffle options
+        let opts = [...q.o].sort(() => Math.random() - 0.5);
+
+        qText.innerText = q.q;
+        optsBox.innerHTML = '';
+        
+        opts.forEach(opt => {
+            const btn = document.createElement('div');
+            btn.className = 'quiz-card';
+            btn.innerText = opt;
+            btn.onclick = () => handleAnswer(opt, q.a, btn);
+            optsBox.appendChild(btn);
+        });
+    }
+
+    function handleAnswer(selected, correct, btn) {
+        if(!gameActive) return;
+
+        const allBtn = optsBox.querySelectorAll('.quiz-card');
+        allBtn.forEach(b => b.style.pointerEvents = 'none'); // block input
+
+        if(selected === correct) {
+            btn.classList.add('correct');
+            // Deal massive damage to boss
+            bossHP -= 20; 
+            if(bossHP < 0) bossHP = 0;
+            
+            // Heal user slightly
+            userHP += 10;
+            if(userHP > 100) userHP = 100;
+            
+            ptsWon += 5; // accumulate points
+        } else {
+            btn.classList.add('incorrect');
+            triggerDamageShake();
+            // Boss punishes you
+            userHP -= 20;
+            if(userHP < 0) userHP = 0;
+            
+            // Show correct answer
+            allBtn.forEach(b => {
+                if(b.innerText === correct) b.classList.add('correct');
+            });
+        }
+
+        updateHPUI();
+
+        if(userHP === 0 || bossHP === 0) {
+            setTimeout(handleGameEnd, 600);
+        } else {
+            currentQ++;
+            setTimeout(loadNextQuestion, 800);
+        }
+    }
+
+    function handleGameEnd() {
+        gameActive = false;
+        clearInterval(attackInterval);
+        updateHPUI();
+
+        const resOver = document.getElementById('result-overlay');
+        resOver.classList.remove('d-none');
+        
+        const won = userHP > 0;
+        
+        if(won) {
+            document.getElementById('victory-state').classList.remove('d-none');
+            // Bonus points for killing the leader
+            ptsWon += 20;
+        } else {
+            document.getElementById('defeat-state').classList.remove('d-none');
+            // Little consolation points
+            ptsWon = Math.max(0, ptsWon - 5); 
+        }
+
+        document.getElementById('points-input').value = ptsWon;
+        
+        setTimeout(() => {
+            document.getElementById('result-form').submit();
+        }, 3500);
+    }
+</script>
+{% endblock %}

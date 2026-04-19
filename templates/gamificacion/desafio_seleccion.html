@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans "Selección de Combate" %}{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+    .gamer-title {
+        font-family: 'Orbitron', sans-serif;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 
+            0 0 5px #fff,
+            0 0 10px #ff00de,
+            0 0 20px #ff00de,
+            0 0 40px #ff00de;
+        letter-spacing: 4px;
+    }
+
+    .gamer-subtitle {
+        font-family: 'Orbitron', sans-serif;
+        color: #00f3ff;
+        letter-spacing: 1px;
+        text-shadow: 0 0 10px #00f3ff;
+    }
+    .selection-area {
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+    }
+
+    .select-card {
+        background: rgba(10, 10, 15, 0.5);
+        border: 2px solid transparent;
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: all 0.4s ease;
+        text-decoration: none;
+        color: white;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Synthwave Style */
+    .card-synthwave {
+        border-color: rgba(0, 243, 255, 0.3);
+    }
+    .card-synthwave:hover {
+        transform: translateY(-10px);
+        background: rgba(10, 10, 15, 0.9);
+        border-color: #00f3ff;
+        box-shadow: 0 15px 40px rgba(0, 243, 255, 0.3), inset 0 0 20px rgba(0,243,255,0.1);
+    }
+    .card-synthwave i { color: #00f3ff; text-shadow: 0 0 15px #00f3ff; }
+    .card-synthwave h2 { color: #ff003c; text-shadow: 0 0 10px #ff003c; font-weight: 900; font-style: italic; }
+
+    /* Undertale Style */
+    .card-undertale {
+        border-color: rgba(255, 255, 255, 0.3);
+        font-family: 'Courier New', Courier, monospace;
+    }
+    .card-undertale:hover {
+        transform: translateY(-10px);
+        background: #000;
+        border-color: #fff;
+        box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
+    }
+    .card-undertale i { color: #ff0000; filter: drop-shadow(0 0 8px #ff0000); }
+    .card-undertale h2 { font-weight: bold; font-family: 'Courier New', Courier, monospace; letter-spacing: 2px; }
+
+    .leader-badge {
+        font-size: 1.5rem;
+        margin-bottom: 3rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+    }
+    
+    footer.site-footer { display: none !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container selection-area">
+    <div class="text-center mb-5 mt-4">
+        <h1 class="display-3 fw-bold gamer-title mb-4">{% trans "ELIGE TU COMBATE" %}</h1>
+        <p class="lead gamer-subtitle fs-4">{% trans "Prepárate para retar al Líder. Existen dos formas de enfrentarlo." %}</p>
+    </div>
+
+    <div class="badge bg-danger text-white px-4 py-3 rounded-pill leader-badge shadow-lg">
+        <i class="fas fa-crown me-2"></i> {% trans "LÍDER ACTUAL:" %} {{ top_user.first_name|default:top_user.username }} ({{ top_user.puntos_acumulados }} pts)
+    </div>
+
+    <div class="row w-100 justify-content-center g-4">
+        <!-- SYNTHWAVE -->
+        <div class="col-md-5 col-lg-4">
+            <a href="?mode=synthwave" class="select-card card-synthwave text-decoration-none">
+                <i class="fas fa-bolt fa-5x mb-4"></i>
+                <h2 class="mb-3">NEÓN CYBERPUNK</h2>
+                <p class="opacity-75 mb-0">{% trans "Modo frenético. El tiempo es tu peor enemigo. Responde rápido antes de que tu energía se agote completamente." %}</p>
+            </a>
+        </div>
+        
+        <!-- UNDERTALE -->
+        <div class="col-md-5 col-lg-4">
+            <a href="?mode=undertale" class="select-card card-undertale text-decoration-none">
+                <i class="fas fa-heart fa-5x mb-4"></i>
+                <h2 class="mb-3">* DETERMINACIÓN</h2>
+                <p class="opacity-75 mb-0" style="font-size: 1.1rem; line-height: 1.5;">{% trans "* Un combate táctico donde cada decisión pesa. Evita que el líder destroce tu alma." %}</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

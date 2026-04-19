@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block extra_css %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<style>
+    .map-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 1200px;
+        height: 60vh;
+        min-height: 500px;
+        margin: 0 auto;
+        border: 2px solid rgba(227, 170, 89, 0.4);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 3rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+    
+    #leaflet-map {
+        width: 100%;
+        height: 100%;
+        background: #111;
+        z-index: 1; /* Keep map below dropdowns */
+    }
+
+    /* Custom Map Marker UI */
+    .custom-marker {
+        width: 40px;
+        height: 40px;
+        background: radial-gradient(circle at center, #e3aa59 20%, #8e5c1b 100%);
+        border: 2px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 15px #e3aa59;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #111;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .custom-marker:hover, .custom-marker.active {
+        transform: scale(1.3) translateY(-10px);
+        box-shadow: 0 15px 25px rgba(227, 170, 89, 0.8);
+        background: #fff;
+        color: #e3aa59;
+        border-color: #e3aa59;
+    }
+
+    /* Info Card Design */
+    .info-card {
+        background: rgba(15, 20, 25, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(227, 170, 89, 0.5);
+        border-radius: 15px;
+        padding: 2.5rem;
+        color: #fff;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        display: none;
+        animation: slideUpFade 0.4s ease forwards;
+        position: relative;
+    }
+
+    .info-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 5px;
+        background: linear-gradient(90deg, transparent, #e3aa59, transparent);
+        border-radius: 15px 15px 0 0;
+    }
+
+    @keyframes slideUpFade {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    footer.site-footer {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="text-center mb-5 reveal">
+        <span class="badge bg-warning text-dark px-3 py-2 text-uppercase mb-3">{% trans "Descubre Loja" %}</span>
+        <h1 class="display-3 fw-bold text-white">{% trans "El Mapa Musical" %}</h1>
+        <p class="lead text-muted mx-auto mt-3" style="max-width: 700px;">
+            {% trans "Explora de forma interactiva los escenarios, plazas y conservatorios que forjaron la identidad sonora de nuestra provincia prestando tu oído a nuestra historia." %}
+        </p>
+    </div>
+
+    <!-- Interactive Real Map Area -->
+    <div class="map-wrapper reveal" data-animation="animate__fadeInUp">
+        <div id="leaflet-map"></div>
+    </div>
+
+    <!-- Detailed Place Info -->
+    <div class="info-card mx-auto" id="place-info" style="max-width: 800px;">
+        <div class="row align-items-center mb-4">
+            <div class="col-auto">
+                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                    <i id="info-icon" class="fas fa-map-marked-alt fa-2x"></i>
+                </div>
+            </div>
+            <div class="col">
+                <h2 id="info-title" class="mb-1 text-warning fw-bold">{% trans "Selecciona un hito en el mapa" %}</h2>
+                <h6 class="text-muted mb-0 text-uppercase letter-spacing-1">{% trans "Punto de Interés Musical" %}</h6>
+            </div>
+        </div>
+        <div class="desc-content">
+            <p id="info-desc" class="mb-0 text-white opacity-75" style="line-height: 1.8; font-size: 1.15rem; text-align: justify;">
+                {% trans "Haz clic en alguno de los marcadores dorados que flotan sobre el mapa superior para aprender a profundidad sobre el legado y la importancia histórica de cada rincón de Loja." %}
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Data from backend -->
+<script id="puntos-data" type="application/json">
+    {{ puntos|safe }}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // Show placeholder
+        document.getElementById('place-info').style.display = 'block';
+
+        // Parse points data injected by Django into JSON format 
+        // Note: we can't just parse {{ puntos|safe }} natively because it's a python dict literal.
+        // We rendered it as raw python, so we need to inject it properly.
+    });
+</script>
+
+<!-- Actually, let's inject variables safely via JS array loop directly -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Init Map centered on Loja
+        var map = L.map('leaflet-map').setView([-3.99313, -79.20422], 14);
+
+        // Map layer using generic Google Maps (Sin necesidad de API Key, se incrustan como tiles de Leaflet)
+        L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            attribution: 'Map data &copy; <a href="https://www.google.com/maps">Google Maps</a>',
+            maxZoom: 20
+        }).addTo(map);
+
+        // Array to keep track of markers
+        var markers = [];
+
+        // Define points from backend
+        const puntos = [
+            {% for p in puntos %}
+            {
+                id: "{{ p.id|escapejs }}",
+                nombre: "{{ p.nombre|escapejs }}",
+                lat: parseFloat("{{ p.lat }}".replace(',', '.')),
+                lng: parseFloat("{{ p.lng }}".replace(',', '.')),
+                icon: "{{ p.icon|escapejs }}",
+                desc: "{{ p.desc|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        puntos.forEach(function(pd) {
+            // Create custom HTML icon
+            var customIcon = L.divIcon({
+                className: 'custom-leaflet-marker', // wrapper class
+                html: '<div class="custom-marker" id="marker-' + pd.id + '"><i class="' + pd.icon + '"></i></div>',
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
+            });
+
+            var marker = L.marker([pd.lat, pd.lng], {icon: customIcon}).addTo(map);
+            markers.push({ id: pd.id, marker: marker });
+
+            marker.on('click', function() {
+                showInfo(pd.id, pd.nombre, pd.desc, pd.icon);
+                
+                // Reset other markers
+                document.querySelectorAll('.custom-marker').forEach(el => el.classList.remove('active'));
+                
+                // Set this active
+                const el = document.getElementById('marker-' + pd.id);
+                if(el) el.classList.add('active');
+
+                // Fly to point with a fancy animation
+                map.flyTo([pd.lat, pd.lng], 16, {
+                    animate: true,
+                    duration: 1.5
+                });
+            });
+        });
+        
+        function showInfo(id, nombre, desc, icon) {
+            document.getElementById('info-title').innerText = nombre;
+            document.getElementById('info-desc').innerText = desc;
+            document.getElementById('info-icon').className = icon + " fa-2x";
+            
+            const card = document.getElementById('place-info');
+            card.style.display = 'block';
+            card.style.animation = 'none';
+            card.offsetHeight; // force reflow
+            card.style.animation = 'slideUpFade 0.5s ease forwards';
+        }
+    });
+</script>
+{% endblock %}

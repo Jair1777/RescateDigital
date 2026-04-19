@@ -9,17 +9,26 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle at 0% 0%, #0a1128 0%, #050814 50%, #000000 100%);
+        background: radial-gradient(circle at 0% 0%, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
         z-index: -1;
+        transition: background 0.5s ease;
+    }
+
+    body.bg-dark .project-page-bg {
+        background: radial-gradient(circle at 0% 0%, #0a1128 0%, #050814 50%, #000000 100%);
     }
 
     .abstract-shape {
         position: absolute;
         border-radius: 50%;
         filter: blur(80px);
-        opacity: 0.15;
+        opacity: 0.2;
         z-index: -1;
         animation: float-shape 20s infinite alternate ease-in-out;
+    }
+
+    body.bg-dark .abstract-shape {
+        opacity: 0.15;
     }
 
     @keyframes float-shape {
@@ -28,12 +37,20 @@
     }
 
     .project-card-glass {
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: 30px;
         padding: 4rem;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+        color: #333333;
+        transition: all 0.5s ease;
+    }
+
+    body.bg-dark .project-card-glass {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         color: #ffffff;
     }
@@ -41,26 +58,41 @@
     .project-header-title {
         font-size: 4rem;
         font-weight: 800;
+        background: linear-gradient(135deg, #b8860b 0%, #d2691e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    body.bg-dark .project-header-title {
         background: linear-gradient(135deg, #e3aa59 0%, #ffcc80 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-shadow: 0 10px 20px rgba(0,0,0,0.2);
     }
 
     .dev-profile-header {
-        background: linear-gradient(to right, rgba(227, 170, 89, 0.1), transparent);
-        border-left: 4px solid #e3aa59;
+        background: linear-gradient(to right, rgba(184, 134, 11, 0.1), transparent);
+        border-left: 4px solid #b8860b;
         padding-left: 20px;
         margin-bottom: 2rem;
+    }
+
+    body.bg-dark .dev-profile-header {
+        background: linear-gradient(to right, rgba(227, 170, 89, 0.1), transparent);
+        border-left: 4px solid #e3aa59;
     }
 
     .floating-note {
         position: absolute;
         font-size: 2rem;
         color: #e3aa59;
-        opacity: 0.1;
+        opacity: 0.3;
         pointer-events: none;
         animation: float-note 10s infinite linear;
+    }
+
+    body.bg-dark .floating-note {
+        opacity: 0.1;
     }
 
     @keyframes float-note {
@@ -74,8 +106,18 @@
         display: none !important;
     }
 
-    /* Override for muted text to be white in this page */
+    /* Text color overrides to adapt to light/dark */
+    .project-card-glass .text-white {
+        color: #333333 !important;
+    }
+    body.bg-dark .project-card-glass .text-white {
+        color: #ffffff !important;
+    }
+    
     .project-card-glass .text-muted {
+        color: #6b7280 !important;
+    }
+    body.bg-dark .project-card-glass .text-muted {
         color: rgba(255,255,255,0.85) !important;
     }
 </style>
@@ -139,13 +181,19 @@
                 <div class="row g-4 align-items-center">
                     <div class="col-lg-8">
                         <h2 class="display-6 fw-bold mb-4 text-white">{% trans "Somos Jostin Torres, Jair Chávez y Juan Arboleda" %}</h2>
-                        <div style="font-size: 1.15rem; line-height: 1.7; color: #ffffff;">
+                        <div style="font-size: 1.15rem; line-height: 1.7;">
                             <p class="mb-4">
                                 {% blocktrans %}Unidad Educativa Fiscomisional La Dolorosa. Como estudiantes, nos complace darles la bienvenida a este espacio digital creado con el firme propósito de rescatar, preservar y difundir el invaluable legado sonoro de nuestra región.{% endblocktrans %}
                             </p>
-                            <p class="mb-0">
+                            <p class="mb-4">
                                 {% blocktrans %}Este proyecto nace de nuestro interés por combinar la educación y la tecnología para aportar a la conservación cultural. Esperamos que este sitio sea una fuente de inspiración y orgullo para todos.{% endblocktrans %}
                             </p>
+
+                            <div class="mt-4 pt-3 border-top border-warning border-opacity-25">
+                                <h5 class="fw-bold mb-3 text-warning">{% trans "Contáctanos:" %}</h5>
+                                <p class="mb-1"><i class="fas fa-envelope text-warning me-2"></i><strong>{% trans "Correo:" %}</strong> <a href="mailto:jostintorresreyes@gmail.com" style="color: inherit;">jostintorresreyes@gmail.com</a></p>
+                                <p class="mb-0"><i class="fas fa-envelope text-warning me-2"></i><strong>{% trans "Correo:" %}</strong> <a href="mailto:jairalexsander4@gmail.com" style="color: inherit;">jairalexsander4@gmail.com</a></p>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-4 text-center">
@@ -162,7 +210,6 @@
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     </div>
 </div>
