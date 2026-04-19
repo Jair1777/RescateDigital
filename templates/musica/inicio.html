@@ -141,8 +141,9 @@
 
 <div class="music-player">
     <div class="player-left">
-        <div class="now-playing-img" style="background: #282828; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
-            <i class="fas fa-music text-muted"></i>
+        <div class="now-playing-img" style="background: #282828; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 4px; overflow: hidden; position: relative;">
+            <i class="fas fa-music text-muted" id="placeholder-icon" style="position: absolute; z-index: 1;"></i>
+            <div id="yt-player" style="position: absolute; z-index: 2; width: 100%; height: 100%;"></div>
         </div>
         <div class="np-info">
             <div class="np-title" id="pTitle">{% trans "Selecciona una canción" %}</div>
@@ -174,7 +175,6 @@
 </div>
 
 <!-- Engines -->
-<div id="yt-player" style="position: absolute; top: -1000px;"></div>
 <audio id="audio-engine"></audio>
 
 {% endblock %}
@@ -202,7 +202,8 @@
 
     window.onYouTubeIframeAPIReady = function() {
         ytPlayer = new YT.Player('yt-player', {
-            height: '1', width: '1',
+            height: '56', width: '56',
+            playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1, 'fs': 0, 'rel': 0 },
             events: {
                 'onReady': () => { ytReady = true; console.log("YT Ready"); },
                 'onStateChange': (e) => { if (e.data === YT.PlayerState.ENDED) nextTrack(); }
@@ -229,11 +230,15 @@
 
         if (track.src) {
             currentMode = 'audio';
+            document.getElementById('yt-player').style.display = 'none';
+            document.getElementById('placeholder-icon').style.display = 'block';
             audio.src = track.src;
             audio.play();
             isPlaying = true;
         } else if (track.yt && ytReady) {
             currentMode = 'youtube';
+            document.getElementById('yt-player').style.display = 'block';
+            document.getElementById('placeholder-icon').style.display = 'none';
             const vidId = extractId(track.yt);
             ytPlayer.loadVideoById(vidId);
             isPlaying = true;
