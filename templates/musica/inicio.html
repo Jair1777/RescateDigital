@@ -98,8 +98,9 @@
 {% block content %}
 <div class="spotify-wrapper">
     <div class="spotify-hero">
-        <div class="playlist-cover">
-            <i class="fas fa-music"></i>
+        <div class="playlist-cover" style="overflow: hidden; position: relative; background: #282828;">
+            <img src="/static/images/loja_album.png" alt="Portada Álbum Lojano" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" onerror="this.style.display='none'; document.getElementById('album-fallback-icon').style.display='block';">
+            <i class="fas fa-music" id="album-fallback-icon" style="font-size: 8rem; color: #fff; z-index: 1;"></i>
         </div>
         <div class="playlist-info">
             <p class="text-uppercase fw-bold small mb-1">{% trans "Playlist" %}</p>
@@ -156,7 +157,7 @@
             <button class="btn-control" onclick="prevTrack()"><i class="fas fa-step-backward"></i></button>
             <button class="btn-control btn-play-pause" onclick="togglePlayback()"><i class="fas fa-play" id="pPlayIcon"></i></button>
             <button class="btn-control" onclick="nextTrack()"><i class="fas fa-step-forward"></i></button>
-            <button class="btn-control"><i class="fas fa-redo"></i></button>
+            <button class="btn-control" onclick="toggleRepeat()"><i class="fas fa-redo" id="btnRepeat"></i></button>
         </div>
         <div class="playback-bar">
             <span id="pCurrentTime">0:00</span>
@@ -199,6 +200,35 @@
     let ytPlayer;
     let ytReady = false;
     let currentMode = 'none';
+    let isRepeat = false;
+    
+    audio.onended = function() {
+        handleTrackEnded();
+    };
+
+    function handleTrackEnded() {
+        if (isRepeat) {
+            if (currentMode === 'youtube' && ytReady) {
+                ytPlayer.seekTo(0);
+                ytPlayer.playVideo();
+            } else {
+                audio.currentTime = 0;
+                audio.play();
+            }
+        } else {
+            nextTrack();
+        }
+    }
+
+    function toggleRepeat() {
+        isRepeat = !isRepeat;
+        const btn = document.getElementById('btnRepeat');
+        if (isRepeat) {
+            btn.classList.add('text-warning'); // Gold active color
+        } else {
+            btn.classList.remove('text-warning');
+        }
+    }
 
     window.onYouTubeIframeAPIReady = function() {
         ytPlayer = new YT.Player('yt-player', {
@@ -206,7 +236,7 @@
             playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1, 'fs': 0, 'rel': 0 },
             events: {
                 'onReady': () => { ytReady = true; console.log("YT Ready"); },
-                'onStateChange': (e) => { if (e.data === YT.PlayerState.ENDED) nextTrack(); }
+                'onStateChange': (e) => { if (e.data === YT.PlayerState.ENDED) handleTrackEnded(); }
             }
         });
     };
